@@ -56,6 +56,10 @@ process.env.NODE_PATH = (process.env.NODE_PATH || '')
 const REACT_APP = /^REACT_APP_/i;
 
 function getClientEnvironment(publicUrl) {
+  const API_ROOT = process.env.NODE_ENV === 'production'
+    ? ''
+    : 'http://localhost:3001';
+
   const raw = Object.keys(process.env)
     .filter(key => REACT_APP.test(key))
     .reduce(
@@ -72,6 +76,7 @@ function getClientEnvironment(publicUrl) {
         // This should only be used as an escape hatch. Normally you would put
         // images into the `src` and `import` them in code to get their paths.
         PUBLIC_URL: publicUrl,
+        API_ROOT: API_ROOT,
       },
     );
   // Stringify all values so we can feed into Webpack DefinePlugin

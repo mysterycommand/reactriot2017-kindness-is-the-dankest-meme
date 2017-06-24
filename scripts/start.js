@@ -24,6 +24,7 @@ const {
   prepareProxy,
   prepareUrls,
 } = require('react-dev-utils/WebpackDevServerUtils');
+const nodemon = require('nodemon');
 const openBrowser = require('react-dev-utils/openBrowser');
 const paths = require('../config/paths');
 const config = require('../config/webpack.config.dev');
@@ -71,7 +72,14 @@ choosePort(HOST, DEFAULT_PORT)
       if (isInteractive) {
         clearConsole();
       }
+
       console.log(chalk.cyan('Starting the development server...\n'));
+
+      nodemon({
+        script: paths.serverIndexJs,
+        watch: paths.serverIndexJs,
+      });
+
       openBrowser(urls.localUrlForBrowser);
     });
 

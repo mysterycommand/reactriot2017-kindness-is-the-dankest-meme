@@ -1,5 +1,7 @@
 const { delimiter } = require('path');
 
+const webpack = require('webpack');
+
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 
 const { appNodeModules, appSrc, components } = require('./paths');
