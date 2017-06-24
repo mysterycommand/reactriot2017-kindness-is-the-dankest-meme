@@ -1,11 +1,12 @@
 const express = require('express');
 const path = require('path');
 
-const IS_DEV = process.env.NODE_ENV === 'development';
+const { NODE_ENV, PORT } = process.env;
+const __DEV__ = NODE_ENV === 'development';
 
 const app = express();
 
-if (IS_DEV) {
+if (__DEV__) {
   app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header(
@@ -27,7 +28,7 @@ app.get('/api/test', (req, res) => {
   }, 200);
 });
 
-if (!IS_DEV) {
+if (!__DEV__) {
   app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../build', 'index.html'));
   });
@@ -37,7 +38,7 @@ app.use((req, res, next) => {
   res.status(404).send('oops :(');
 });
 
-const port = process.env.PORT || (IS_DEV ? 3001 : 3000);
+const port = PORT || (__DEV__ ? 3001 : 3000);
 
 app.listen(port);
 
