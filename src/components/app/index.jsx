@@ -6,6 +6,11 @@ import './style.scss';
 
 class App extends Component {
   state = { text: 'fetching...' };
+
+  componentDidMount() {
+    this.fetch();
+  }
+
   handleClick = () => {
     this.setState(
       {
