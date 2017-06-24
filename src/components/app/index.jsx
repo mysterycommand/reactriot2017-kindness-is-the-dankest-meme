@@ -1,26 +1,19 @@
 import React, { Component } from 'react';
+import { Stage, Layer } from 'react-konva';
+import Token from 'components/token';
+
 import './style.scss';
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = { text: 'fetching...' };
-    this.handleClick = this.handleClick.bind(this);
-  }
-
-  componentDidMount() {
-    this.fetch();
-  }
-
-  handleClick() {
+  state = { text: 'fetching...' };
+  handleClick = () => {
     this.setState(
       {
         text: 'fetching....',
       },
       this.fetch,
     );
-  }
+  };
 
   fetch() {
     fetch(`${process.env.API_ROOT}/api/test`).then(r => r.json()).then(json => {
@@ -31,8 +24,18 @@ class App extends Component {
   }
 
   render() {
+    const w = 480;
+    const h = 270;
+    const hw = w / 2;
+    const hh = h / 2;
+
     return (
       <div className="app">
+        <Stage className="app" width={w} height={h}>
+          <Layer>
+            <Token x={hw} y={hh} radius={48} />
+          </Layer>
+        </Stage>
         <h1>{this.state.text}</h1>
         <button onClick={this.handleClick}>a new one</button>
       </div>
