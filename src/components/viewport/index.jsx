@@ -1,6 +1,14 @@
 import React from 'react';
 import { Stage, Layer } from 'react-konva';
-import { number, shape, string, bool, objectOf, arrayOf } from 'prop-types';
+import {
+  number,
+  shape,
+  func,
+  string,
+  bool,
+  objectOf,
+  arrayOf,
+} from 'prop-types';
 
 import Dungeon from 'components/dungeon';
 
@@ -9,8 +17,20 @@ import style from './style.scss';
 // <Token x={halfWidth - 60} y={halfHeight} radius={48} face="star" />
 // <Token x={halfWidth + 60} y={halfHeight} radius={48} />
 
-const Viewport = ({ width, height, dungeon, zoomLevel }) =>
-  <Stage className={style.viewport} width={width} height={height}>
+const Viewport = ({
+  width,
+  height,
+  dungeon,
+  zoomLevel,
+  centerOffset,
+  onClick,
+}) =>
+  <Stage
+    className={style.viewport}
+    width={width}
+    height={height}
+    onClick={onClick}
+  >
     <Layer>
 
       <Dungeon
@@ -18,6 +38,7 @@ const Viewport = ({ width, height, dungeon, zoomLevel }) =>
         height={height}
         dungeon={dungeon}
         zoomLevel={zoomLevel}
+        centerOffset={centerOffset}
       />
     </Layer>
   </Stage>;
@@ -33,6 +54,8 @@ Viewport.propTypes = {
   width: number.isRequired,
   height: number.isRequired,
   zoomLevel: number.isRequired,
+  onClick: func.isRequired,
+  centerOffset: shape({ x: number, y: number }).isRequired,
   dungeon: shape({
     rooms: objectOf(
       shape({

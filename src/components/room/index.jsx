@@ -6,7 +6,7 @@ import Tile from 'components/tile';
 
 const BASE_TILE_SIZE = 40;
 
-const Room = ({ floorColor, tiles, w, h, id, zoomLevel }) => {
+const Room = ({ floorColor, tiles, w, h, id, zoomLevel, centerOffset }) => {
   const tileSize = BASE_TILE_SIZE * zoomLevel;
   const realCenter = { x: w / 2, y: h / 2 };
 
@@ -14,7 +14,10 @@ const Room = ({ floorColor, tiles, w, h, id, zoomLevel }) => {
     const scaled = { x: x * tileSize, y: y * tileSize };
 
     // 0, 0 was center before
-    const shifted = { x: scaled.x + realCenter.x, y: scaled.y + realCenter.y };
+    const shifted = {
+      x: scaled.x + realCenter.x + centerOffset.x,
+      y: scaled.y + realCenter.y + centerOffset.y,
+    };
 
     return shifted;
   };
@@ -57,11 +60,8 @@ Room.propTypes = {
   w: number.isRequired,
   h: number.isRequired,
   id: string.isRequired,
-  zoomLevel: number,
-};
-
-Room.defaultProps = {
-  zoomLevel: 1,
+  zoomLevel: number.isRequired,
+  centerOffset: shape({ x: number, y: number }).isRequired,
 };
 
 export default Room;
