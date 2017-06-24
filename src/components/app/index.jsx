@@ -7,6 +7,7 @@ import Viewport from 'components/viewport';
 import style from './style.scss';
 
 import { generateDungeon } from '../../utils/dungeon';
+import randomRgb from '../../utils/random-rgb';
 import { changeZoomLevel, changeCenterOffset } from '../../ducks/viewport';
 
 class App extends Component {
@@ -21,15 +22,50 @@ class App extends Component {
     changeCenter: func.isRequired,
   };
 
-  state = { dungeon: generateDungeon(7) };
+  state = { dungeon: generateDungeon(7), players: [] };
 
   componentDidMount() {
     window.app = this;
+
+    this.state.players = this.getPlayers(this.state.dungeon);
   }
 
+  getPlayers = dungeon => {
+    const tiles = Object.keys(dungeon.rooms)
+      .map(id => dungeon.rooms[id].tiles)
+      .reduce((acc, val) => acc.concat(val), []);
+
+    const players = [
+      {
+        id: '1',
+        fill: randomRgb(),
+        face: 'crown',
+      },
+      {
+        id: '2',
+        fill: randomRgb(),
+        face: 'star',
+      },
+    ];
+
+    players.forEach(player => {
+      const tile = tiles[Math.floor(Math.random() * tiles.length)];
+      Object.assign(player, {
+        x: tile.x,
+        y: tile.y,
+      });
+    });
+
+    return players;
+  };
+
   makeNew = () => {
+    const dungeon = generateDungeon(7);
+    const players = this.getPlayers(dungeon);
+
     this.setState({
-      dungeon: generateDungeon(7),
+      dungeon,
+      players,
     });
   };
 
@@ -63,6 +99,7 @@ class App extends Component {
             centerOffset,
             onClick: this.viewportClick,
             dungeon: this.state.dungeon,
+            players: this.state.players,
           }}
         />
 

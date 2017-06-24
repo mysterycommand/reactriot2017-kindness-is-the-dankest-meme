@@ -14,9 +14,6 @@ import Dungeon from 'components/dungeon';
 
 import style from './style.scss';
 
-// <Token x={halfWidth - 60} y={halfHeight} radius={48} face="star" />
-// <Token x={halfWidth + 60} y={halfHeight} radius={48} />
-
 const Viewport = ({
   width,
   height,
@@ -24,6 +21,7 @@ const Viewport = ({
   zoomLevel,
   centerOffset,
   onClick,
+  players,
 }) =>
   <Stage
     className={style.viewport}
@@ -39,6 +37,7 @@ const Viewport = ({
         dungeon={dungeon}
         zoomLevel={zoomLevel}
         centerOffset={centerOffset}
+        players={players}
       />
     </Layer>
   </Stage>;
@@ -48,6 +47,14 @@ const tileShape = shape({
   y: number,
   walls: objectOf(bool),
   doors: objectOf(bool),
+});
+
+const playerShape = shape({
+  x: number,
+  y: number,
+  fill: string,
+  face: string,
+  id: string,
 });
 
 Viewport.propTypes = {
@@ -65,6 +72,7 @@ Viewport.propTypes = {
     ),
     tileToRoom: objectOf(string),
   }).isRequired,
+  players: arrayOf(playerShape).isRequired,
 };
 
 export default Viewport;
