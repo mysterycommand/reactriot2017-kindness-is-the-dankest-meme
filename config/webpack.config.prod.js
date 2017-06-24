@@ -79,7 +79,7 @@ module.exports = mergeSmart(base, {
       // First, run the linter.
       // It's important to do this before Babel processes the JS.
       {
-        test: /\.(js|jsx)$/,
+        test: /\.jsx?$/,
         enforce: 'pre',
         use: [
           {
@@ -102,8 +102,8 @@ module.exports = mergeSmart(base, {
       {
         exclude: [
           /\.html$/,
-          /\.(js|jsx)$/,
-          /\.css$/,
+          /\.jsx?$/,
+          /\.s?css$/,
           /\.json$/,
           /\.bmp$/,
           /\.gif$/,
@@ -127,7 +127,7 @@ module.exports = mergeSmart(base, {
       },
       // Process JS with Babel.
       {
-        test: /\.(js|jsx)$/,
+        test: /\.jsx?$/,
         include: paths.appSrc,
         loader: require.resolve('babel-loader'),
       },
@@ -144,7 +144,7 @@ module.exports = mergeSmart(base, {
       // use the "style" loader inside the async code so CSS from them won't be
       // in the main CSS file.
       {
-        test: /\.css$/,
+        test: /\.s?css$/,
         loader: ExtractTextPlugin.extract(
           Object.assign(
             {
@@ -174,6 +174,12 @@ module.exports = mergeSmart(base, {
                         flexbox: 'no-2009',
                       }),
                     ],
+                  },
+                },
+                {
+                  loader: require.resolve('sass-loader'),
+                  options: {
+                    includePaths: [paths.appSrc, paths.styles],
                   },
                 },
               ],
