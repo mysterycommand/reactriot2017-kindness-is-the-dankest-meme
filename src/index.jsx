@@ -27,12 +27,14 @@ window.addEventListener('resize', onResize);
 onResize({ target: window });
 
 const { NODE_ENV, PORT } = process.env;
-const { hostname } = location;
+const { hostname: h, protocol: p } = location;
+
 const port = NODE_ENV !== 'production'
   ? `:${PORT || (NODE_ENV === 'development' ? 3001 : 3000)}`
   : '';
+const s = p === 'https:' ? 's' : '';
 
-const ws = new WebSocket(`wss://${hostname}${port}/dungeon`);
+const ws = new WebSocket(`ws${s}://${h}${port}/dungeon`);
 ws.addEventListener('message', ({ data }) => console.log(data));
 ws.addEventListener('open', () => {
   ws.send('test');
