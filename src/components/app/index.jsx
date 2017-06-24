@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Stage, Layer } from 'react-konva';
+import { connect } from 'react-redux';
 import Token from 'components/token';
 
 import './style.scss';
@@ -48,4 +49,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default connect(state => state)(App);
