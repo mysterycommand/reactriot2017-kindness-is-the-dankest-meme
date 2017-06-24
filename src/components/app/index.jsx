@@ -1,18 +1,17 @@
 import React, { Component } from 'react';
 import { Stage, Layer } from 'react-konva';
 import Token from 'components/token';
+import Dungeon from 'components/dungeon';
 
 import './style.scss';
 
 import { generateDungeon } from '../../utils/dungeon';
 
 class App extends Component {
-  state = { text: 'fetching...' };
+  state = { text: 'fetching...', dungeon: generateDungeon(2) };
 
   componentDidMount() {
     this.fetch();
-
-    window.dungeon = generateDungeon(2);
   }
 
   handleClick = () => {
@@ -47,6 +46,8 @@ class App extends Component {
         </Stage>
         <h1>{this.state.text}</h1>
         <button onClick={this.handleClick}>a new one</button>
+
+        <Dungeon dungeon={this.state.dungeon} />
       </div>
     );
   }
