@@ -2,10 +2,7 @@
   "name": "reactriot2017-kindness-is-the-dankest-meme",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1"
-  },
+  "dependencies": {},
   "devDependencies": {
     "autoprefixer": "7.1.0",
     "babel-core": "6.24.1",
