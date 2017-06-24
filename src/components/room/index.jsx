@@ -1,13 +1,11 @@
 import React from 'react';
-import { Rect, Group } from 'react-konva';
-import { shape, objectOf, arrayOf, number, bool } from 'prop-types';
+import { Group } from 'react-konva';
+import { shape, objectOf, arrayOf, number, bool, string } from 'prop-types';
 
-import randomRgb from '../../utils/random-rgb';
+import Tile from 'components/tile';
 
-const Room = ({ tiles, w, h }) => {
-  const color = randomRgb();
-
-  const tileSize = 10;
+const Room = ({ floorColor, tiles, w, h }) => {
+  const tileSize = 25;
   const realCenter = { x: w / 2, y: h / 2 };
 
   const mapCenter = (x, y) => {
@@ -23,14 +21,15 @@ const Room = ({ tiles, w, h }) => {
     const center = mapCenter(tile.x, tile.y);
 
     return (
-      <Rect
+      <Tile
         key={`${tile.x},${tile.y}`}
         x={center.x - tileSize / 2}
         y={center.y - tileSize / 2}
         width={tileSize}
         height={tileSize}
-        fill={color}
-        strokeEnabled={false}
+        floorColor={floorColor}
+        walls={tile.walls}
+        doors={tile.doors}
       />
     );
   });
@@ -50,6 +49,7 @@ const tileShape = shape({
 });
 
 Room.propTypes = {
+  floorColor: string.isRequired,
   tiles: arrayOf(tileShape).isRequired,
   w: number.isRequired,
   h: number.isRequired,

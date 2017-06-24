@@ -10,7 +10,15 @@ const Dungeon = ({ dungeon }) => {
 
   const rooms = Object.keys(dungeon.rooms).map(roomId => {
     const room = dungeon.rooms[roomId];
-    return <Room key={room.id} tiles={room.tiles} w={w} h={h} />;
+    return (
+      <Room
+        key={room.id}
+        floorColor={room.floorColor}
+        tiles={room.tiles}
+        w={w}
+        h={h}
+      />
+    );
   });
 
   return (

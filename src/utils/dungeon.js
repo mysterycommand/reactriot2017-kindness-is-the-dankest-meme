@@ -1,3 +1,5 @@
+import randomRgb from './random-rgb';
+
 const MIN_TILES_PER_ROOM = 4;
 const MAX_TILES_PER_ROOM = 12;
 const DOORS_PER_ROOM = 3;
@@ -62,6 +64,7 @@ export function addRoom(dungeon) {
   const room = {
     id: roomCount,
     doorTiles: [],
+    floorColor: randomRgb(),
   };
 
   const tilesInRoom = {};
