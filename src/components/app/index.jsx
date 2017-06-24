@@ -4,11 +4,15 @@ import Token from 'components/token';
 
 import './style.scss';
 
+import { generateDungeon } from '../../utils/dungeon';
+
 class App extends Component {
   state = { text: 'fetching...' };
 
   componentDidMount() {
     this.fetch();
+
+    window.dungeon = generateDungeon(2);
   }
 
   handleClick = () => {
