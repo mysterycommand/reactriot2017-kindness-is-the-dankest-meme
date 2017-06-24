@@ -1,13 +1,10 @@
 import React from 'react';
-import { Stage, Layer } from 'react-konva';
+import { Group } from 'react-konva';
 import { shape, objectOf, arrayOf, number, string, bool } from 'prop-types';
 
 import Room from 'components/room';
 
-const Dungeon = ({ dungeon }) => {
-  const w = 700;
-  const h = 700;
-
+const Dungeon = ({ dungeon, width, height }) => {
   const rooms = Object.keys(dungeon.rooms).map(roomId => {
     const room = dungeon.rooms[roomId];
     return (
@@ -15,19 +12,17 @@ const Dungeon = ({ dungeon }) => {
         key={room.id}
         floorColor={room.floorColor}
         tiles={room.tiles}
-        w={w}
-        h={h}
+        w={width}
+        h={height}
         id={room.id}
       />
     );
   });
 
   return (
-    <Stage className="dungeon" width={w} height={h}>
-      <Layer>
-        {rooms}
-      </Layer>
-    </Stage>
+    <Group>
+      {rooms}
+    </Group>
   );
 };
 
@@ -39,6 +34,8 @@ const tileShape = shape({
 });
 
 Dungeon.propTypes = {
+  width: number.isRequired,
+  height: number.isRequired,
   dungeon: shape({
     rooms: objectOf(
       shape({

@@ -2,10 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { number } from 'prop-types';
 
-import { Stage, Layer } from 'react-konva';
-import Token from 'components/token';
-import Dungeon from 'components/dungeon';
-
 import Viewport from 'components/viewport';
 
 import style from './style.scss';
@@ -49,11 +45,12 @@ class App extends Component {
 
     return (
       <div className={style.app}>
-        <Viewport {...{ width, height }} />
-        <h1>{this.state.text}</h1>
-        <button onClick={this.handleClick}>a new one</button>
+        <Viewport {...{ width, height, dungeon: this.state.dungeon }} />
 
-        <Dungeon dungeon={this.state.dungeon} />
+        <div className={style.menu}>
+          <h1>{this.state.text}</h1>
+          <button onClick={this.handleClick}>a new one</button>
+        </div>
       </div>
     );
   }
