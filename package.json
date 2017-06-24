@@ -7,10 +7,13 @@
     "npm": "^5.0.3"
   },
   "files": [
-    "build",
-    "server"
+    "config",
+    "public",
+    "scripts",
+    "server",
+    "src"
   ],
-  "main": "server/index.js",
+  "main": "./server/index.js",
   "contributors": [
     "Reza Akhavan <reza@akhavan.me> (https://github.com/jedireza)",
     "Robbie Dawson <robhdawson@gmail.com> (https://github.com/robhdawson/)",

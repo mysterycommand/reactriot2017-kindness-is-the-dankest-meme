@@ -6,4 +6,5 @@ src
 .editorconfig
 .gitignore
 .nvmrc
+package-lock.json
 yarn.lock
