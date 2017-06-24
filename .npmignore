@@ -1,10 +1,2 @@
-config
-public
-scripts
-src
-
 .editorconfig
-.gitignore
 .nvmrc
-package-lock.json
-yarn.lock
