@@ -3,11 +3,12 @@ const path = require('path');
 const express = require('express');
 
 const { NODE_ENV, PORT } = process.env;
-const __DEV__ = NODE_ENV === 'development';
+const port = PORT || (NODE_ENV === 'development' ? 3001 : 3000);
 
 const app = express();
+require('express-ws')(app);
 
-if (__DEV__) {
+if (NODE_ENV === 'development') {
   app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header(
@@ -29,7 +30,7 @@ app.get('/api/test', (req, res) => {
   }, 200);
 });
 
-if (!__DEV__) {
+if (!NODE_ENV === 'development') {
   app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../build', 'index.html'));
   });
@@ -39,7 +40,11 @@ app.use((req, res, next) => {
   res.status(404).send('oops :(');
 });
 
-const port = PORT || (__DEV__ ? 3001 : 3000);
+app.ws('/dungeon', (ws, req) => {
+  ws.on('message', message => {
+    ws.send(message);
+  });
+});
 
 app.listen(port);
 

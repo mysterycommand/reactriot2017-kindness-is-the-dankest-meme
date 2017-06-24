@@ -25,4 +25,14 @@ function onResize({ target }) {
 window.addEventListener('resize', onResize);
 onResize({ target: window });
 
+const { NODE_ENV, PORT } = process.env;
+const { hostname } = location;
+const port = PORT || (NODE_ENV === 'development' ? 3001 : 3000);
+
+const ws = new WebSocket(`ws://${hostname}:${port}/dungeon`);
+ws.addEventListener('message', ({ data }) => console.log(data));
+ws.addEventListener('open', () => {
+  ws.send('test');
+});
+
 registerServiceWorker();
