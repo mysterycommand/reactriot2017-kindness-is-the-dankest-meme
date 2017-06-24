@@ -5,7 +5,8 @@ import { createStore } from 'redux';
 
 import App from 'components/app';
 import registerServiceWorker from './registerServiceWorker';
-import reducers, { resize } from './ducks';
+import reducers from './ducks';
+import { resize } from './ducks/viewport';
 
 import './style.scss';
 

@@ -1,26 +1,47 @@
 import React from 'react';
 import { Stage, Layer } from 'react-konva';
-import { number, shape, string, bool, objectOf, arrayOf } from 'prop-types';
+import {
+  number,
+  shape,
+  func,
+  string,
+  bool,
+  objectOf,
+  arrayOf,
+} from 'prop-types';
 
 import Dungeon from 'components/dungeon';
-import Token from 'components/token';
 
 import style from './style.scss';
 
-const Viewport = ({ width, height, dungeon }) => {
-  const halfWidth = width / 2;
-  const halfHeight = height / 2;
+// <Token x={halfWidth - 60} y={halfHeight} radius={48} face="star" />
+// <Token x={halfWidth + 60} y={halfHeight} radius={48} />
 
-  return (
-    <Stage className={style.viewport} width={width} height={height}>
-      <Layer>
-        <Token x={halfWidth - 60} y={halfHeight} radius={48} face="star" />
-        <Token x={halfWidth + 60} y={halfHeight} radius={48} />
-        <Dungeon width={width} height={height} dungeon={dungeon} />
-      </Layer>
-    </Stage>
-  );
-};
+const Viewport = ({
+  width,
+  height,
+  dungeon,
+  zoomLevel,
+  centerOffset,
+  onClick,
+}) =>
+  <Stage
+    className={style.viewport}
+    width={width}
+    height={height}
+    onClick={onClick}
+  >
+    <Layer>
+
+      <Dungeon
+        width={width}
+        height={height}
+        dungeon={dungeon}
+        zoomLevel={zoomLevel}
+        centerOffset={centerOffset}
+      />
+    </Layer>
+  </Stage>;
 
 const tileShape = shape({
   x: number,
@@ -32,6 +53,9 @@ const tileShape = shape({
 Viewport.propTypes = {
   width: number.isRequired,
   height: number.isRequired,
+  zoomLevel: number.isRequired,
+  onClick: func.isRequired,
+  centerOffset: shape({ x: number, y: number }).isRequired,
   dungeon: shape({
     rooms: objectOf(
       shape({
