@@ -34,9 +34,6 @@ class Token extends Component {
     const { x, y, radius } = this.props;
     const { fill } = this.state;
 
-    const pathWidth = radius * 1.1;
-    const pathHeight = pathWidth * 2 / 3;
-
     return (
       <Group onClick={this.onClick}>
         <Coin
@@ -51,8 +48,8 @@ class Token extends Component {
           {...{
             x,
             y,
-            width: pathWidth,
-            height: pathHeight,
+            width: radius,
+            height: radius * 2 / 3,
             fill: 'rgba(0,0,0,0.15)',
           }}
         />
