@@ -46,9 +46,11 @@ const Tile = ({ x, y, width, height, floorColor, walls, doors, roomId }) => {
   const drawnWalls = [];
   const drawnDoors = [];
 
+  const topLeft = { x: x - width / 2, y: y - height / 2 };
+
   directions.forEach(direction => {
     if (walls[direction]) {
-      const points = wallPoints(x, y, width, height, direction);
+      const points = wallPoints(topLeft.x, topLeft.y, width, height, direction);
 
       drawnWalls.push(
         <Path
@@ -66,7 +68,7 @@ const Tile = ({ x, y, width, height, floorColor, walls, doors, roomId }) => {
     }
 
     if (doors[direction]) {
-      const points = doorPoints(x, y, width, height, direction);
+      const points = doorPoints(topLeft.x, topLeft.y, width, height, direction);
 
       drawnDoors.push(
         <Path
@@ -87,8 +89,8 @@ const Tile = ({ x, y, width, height, floorColor, walls, doors, roomId }) => {
   return (
     <Group>
       <Rect
-        x={x}
-        y={y}
+        x={topLeft.x}
+        y={topLeft.y}
         width={width}
         height={height}
         fill={floorColor}

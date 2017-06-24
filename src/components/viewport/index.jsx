@@ -6,16 +6,15 @@ import Dungeon from 'components/dungeon';
 
 import style from './style.scss';
 
-const Viewport = ({ width, height, dungeon, zoomLevel, centerOffset }) =>
+const Viewport = ({ width, height, dungeon, zoomLevel, players }) =>
   <Stage className={style.viewport} width={width} height={height}>
     <Layer draggable>
-
       <Dungeon
         width={width}
         height={height}
         dungeon={dungeon}
         zoomLevel={zoomLevel}
-        centerOffset={centerOffset}
+        players={players}
       />
     </Layer>
   </Stage>;
@@ -27,11 +26,18 @@ const tileShape = shape({
   doors: objectOf(bool),
 });
 
+const playerShape = shape({
+  x: number,
+  y: number,
+  fill: string,
+  face: string,
+  id: string,
+});
+
 Viewport.propTypes = {
   width: number.isRequired,
   height: number.isRequired,
   zoomLevel: number.isRequired,
-  centerOffset: shape({ x: number, y: number }).isRequired,
   dungeon: shape({
     rooms: objectOf(
       shape({
@@ -41,6 +47,7 @@ Viewport.propTypes = {
     ),
     tileToRoom: objectOf(string),
   }).isRequired,
+  players: arrayOf(playerShape).isRequired,
 };
 
 export default Viewport;

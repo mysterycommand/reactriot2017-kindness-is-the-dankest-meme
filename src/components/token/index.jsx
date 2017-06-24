@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import { Group, Star } from 'react-konva';
-import { number, oneOf } from 'prop-types';
+import { number, oneOf, string } from 'prop-types';
 
 import Coin from 'components/coin';
 import Crown from 'components/crown';
-
-import randomRgb from '../../utils/random-rgb';
 
 class Token extends Component {
   static propTypes = {
@@ -13,6 +11,7 @@ class Token extends Component {
     y: number,
     radius: number,
     face: oneOf(['crown', 'star']),
+    fill: string,
   };
 
   static defaultProps = {
@@ -20,16 +19,7 @@ class Token extends Component {
     y: 0,
     radius: 10,
     face: 'crown',
-  };
-
-  state = {
-    fill: randomRgb(),
-  };
-
-  onClick = () => {
-    this.setState({
-      fill: randomRgb(),
-    });
+    fill: 'rgba(255,255,255,1)',
   };
 
   getFace() {
@@ -66,11 +56,10 @@ class Token extends Component {
   }
 
   render() {
-    const { x, y, radius } = this.props;
-    const { fill } = this.state;
+    const { x, y, radius, fill } = this.props;
 
     return (
-      <Group onClick={this.onClick}>
+      <Group>
         <Coin
           {...{
             x,
