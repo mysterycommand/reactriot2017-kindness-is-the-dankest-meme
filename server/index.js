@@ -1,7 +1,5 @@
-/* global IS_DEV */
-
-import express from 'express';
-import path from 'path';
+const express = require('express');
+const path = require('path');
 
 const app = express();
 
@@ -13,8 +11,6 @@ app.get('/api', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  console.log('is_dev', IS_DEV);
-
   res.sendFile(path.join(__dirname, './client', 'index.html'));
 });
 
