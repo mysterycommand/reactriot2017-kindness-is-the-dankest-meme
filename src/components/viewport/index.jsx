@@ -1,42 +1,19 @@
 import React from 'react';
 import { Stage, Layer } from 'react-konva';
-import {
-  number,
-  shape,
-  func,
-  string,
-  bool,
-  objectOf,
-  arrayOf,
-} from 'prop-types';
+import { number, shape, string, bool, objectOf, arrayOf } from 'prop-types';
 
 import Dungeon from 'components/dungeon';
 
 import style from './style.scss';
 
-const Viewport = ({
-  width,
-  height,
-  dungeon,
-  zoomLevel,
-  centerOffset,
-  onClick,
-  players,
-}) =>
-  <Stage
-    className={style.viewport}
-    width={width}
-    height={height}
-    onClick={onClick}
-  >
-    <Layer>
-
+const Viewport = ({ width, height, dungeon, zoomLevel, players }) =>
+  <Stage className={style.viewport} width={width} height={height}>
+    <Layer draggable>
       <Dungeon
         width={width}
         height={height}
         dungeon={dungeon}
         zoomLevel={zoomLevel}
-        centerOffset={centerOffset}
         players={players}
       />
     </Layer>
@@ -61,8 +38,6 @@ Viewport.propTypes = {
   width: number.isRequired,
   height: number.isRequired,
   zoomLevel: number.isRequired,
-  onClick: func.isRequired,
-  centerOffset: shape({ x: number, y: number }).isRequired,
   dungeon: shape({
     rooms: objectOf(
       shape({

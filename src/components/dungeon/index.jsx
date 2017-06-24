@@ -7,22 +7,15 @@ import Token from 'components/token';
 
 const BASE_TILE_SIZE = 40;
 
-const Dungeon = ({
-  dungeon,
-  width,
-  height,
-  zoomLevel,
-  centerOffset,
-  players,
-}) => {
+const Dungeon = ({ dungeon, width, height, zoomLevel, players }) => {
   const tileSize = BASE_TILE_SIZE * zoomLevel;
   const realCenter = { x: width / 2, y: height / 2 };
 
   const transformPoint = point => {
     const scaled = { x: point.x * tileSize, y: point.y * tileSize };
     const shifted = {
-      x: scaled.x + realCenter.x + centerOffset.x,
-      y: scaled.y + realCenter.y + centerOffset.y,
+      x: scaled.x + realCenter.x,
+      y: scaled.y + realCenter.y,
     };
 
     return shifted;
@@ -38,7 +31,6 @@ const Dungeon = ({
         tileSize={tileSize}
         id={room.id}
         zoomLevel={zoomLevel}
-        centerOffset={centerOffset}
         transformPoint={transformPoint}
       />
     );
@@ -83,7 +75,6 @@ const playerShape = shape({
 Dungeon.propTypes = {
   width: number.isRequired,
   height: number.isRequired,
-  centerOffset: shape({ x: number, y: number }).isRequired,
   dungeon: shape({
     rooms: objectOf(
       shape({
