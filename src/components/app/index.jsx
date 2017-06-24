@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { Stage, Layer } from 'react-konva';
 import { connect } from 'react-redux';
 import { number } from 'prop-types';
 
-import Token from 'components/token';
+import Viewport from 'components/viewport';
 
-import './style.scss';
+import style from './style.scss';
 
 class App extends Component {
   static propTypes = {
@@ -38,16 +37,10 @@ class App extends Component {
 
   render() {
     const { width, height } = this.props;
-    const hw = width / 2;
-    const hh = height / 2;
 
     return (
-      <div className="app">
-        <Stage className="stage" width={width} height={height}>
-          <Layer>
-            <Token x={hw} y={hh} radius={48} />
-          </Layer>
-        </Stage>
+      <div className={style.app}>
+        <Viewport {...{ width, height }} />
         <h1>{this.state.text}</h1>
         <button onClick={this.handleClick}>a new one</button>
       </div>
