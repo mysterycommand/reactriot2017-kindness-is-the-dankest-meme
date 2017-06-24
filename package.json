@@ -79,7 +79,7 @@
     "dev": "node ./scripts/start.js",
     "build": "node ./scripts/build.js",
     "now-start": "NODE_ENV=production node ./server/index.js",
-    "start": "yarn build && yarn now-start",
+    "start": "npm run build && npm run now-start",
     "test": "node ./scripts/test.js --env=jsdom"
   },
   "jest": {
