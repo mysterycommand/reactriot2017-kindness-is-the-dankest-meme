@@ -1,7 +1,7 @@
 import randomRgb from './random-rgb';
 
-const MIN_TILES_PER_ROOM = 5;
-const MAX_TILES_PER_ROOM = 15;
+const MIN_TILES_PER_ROOM = 3;
+const MAX_TILES_PER_ROOM = 8;
 const DOORS_PER_ROOM = 3;
 
 function hasWall(tile) {

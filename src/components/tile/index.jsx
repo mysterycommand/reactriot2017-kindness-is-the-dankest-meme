@@ -18,6 +18,30 @@ const wallPoints = (x, y, width, height, direction) => {
   }
 };
 
+const doorPoints = (x, y, width, height, direction) => {
+  const dw = width / 4;
+  const dy = height / 4;
+
+  switch (direction) {
+    case 'top':
+      return [{ x: x + dw }, { x: x + width - dw, y }];
+    case 'right':
+      return [
+        { x: x + width, y: y + dy },
+        { x: x + width, y: y + height - dy },
+      ];
+    case 'bottom':
+      return [
+        { x: x + dw, y: y + height },
+        { x: x + width - dw, y: y + height },
+      ];
+    case 'left':
+      return [{ x, y: y + dy }, { x, y: y + height - dy }];
+    default:
+      throw new Error('ahhHHHhHHHh');
+  }
+};
+
 const Tile = ({ x, y, width, height, floorColor, walls, doors, roomId }) => {
   const drawnWalls = [];
   const drawnDoors = [];
@@ -42,7 +66,7 @@ const Tile = ({ x, y, width, height, floorColor, walls, doors, roomId }) => {
     }
 
     if (doors[direction]) {
-      const points = wallPoints(x, y, width, height, direction);
+      const points = doorPoints(x, y, width, height, direction);
 
       drawnDoors.push(
         <Path
@@ -54,7 +78,7 @@ const Tile = ({ x, y, width, height, floorColor, walls, doors, roomId }) => {
           ].join(' ')}
           fillEnabled={false}
           stroke={'#efefef'}
-          strokeWidth={3}
+          strokeWidth={2}
         />,
       );
     }

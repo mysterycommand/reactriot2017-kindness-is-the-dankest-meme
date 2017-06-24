@@ -5,7 +5,7 @@ import { shape, objectOf, arrayOf, number, bool, string } from 'prop-types';
 import Tile from 'components/tile';
 
 const Room = ({ floorColor, tiles, w, h, id }) => {
-  const tileSize = 25;
+  const tileSize = 30;
   const realCenter = { x: w / 2, y: h / 2 };
 
   const mapCenter = (x, y) => {
