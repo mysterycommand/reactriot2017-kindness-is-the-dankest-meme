@@ -4,7 +4,7 @@ import { shape, objectOf, arrayOf, number, bool, string } from 'prop-types';
 
 import Tile from 'components/tile';
 
-const Room = ({ floorColor, tiles, w, h }) => {
+const Room = ({ floorColor, tiles, w, h, id }) => {
   const tileSize = 25;
   const realCenter = { x: w / 2, y: h / 2 };
 
@@ -30,6 +30,7 @@ const Room = ({ floorColor, tiles, w, h }) => {
         floorColor={floorColor}
         walls={tile.walls}
         doors={tile.doors}
+        roomId={id}
       />
     );
   });
@@ -53,6 +54,7 @@ Room.propTypes = {
   tiles: arrayOf(tileShape).isRequired,
   w: number.isRequired,
   h: number.isRequired,
+  id: string.isRequired,
 };
 
 export default Room;

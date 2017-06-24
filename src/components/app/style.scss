@@ -1,7 +1,9 @@
 @import 'global';
 
 .app {
-  @include size(100%);
+  // @include size(100%);
+  width: 100%;
+  min-height: 100%;
   @extend %flex-container;
   flex-direction: column;
 }

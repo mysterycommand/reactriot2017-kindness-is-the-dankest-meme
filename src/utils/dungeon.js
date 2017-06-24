@@ -1,7 +1,7 @@
 import randomRgb from './random-rgb';
 
-const MIN_TILES_PER_ROOM = 4;
-const MAX_TILES_PER_ROOM = 12;
+const MIN_TILES_PER_ROOM = 5;
+const MAX_TILES_PER_ROOM = 15;
 const DOORS_PER_ROOM = 3;
 
 function hasWall(tile) {
@@ -62,7 +62,7 @@ export function addRoom(dungeon) {
   const roomCount = Object.keys(dungeon.rooms).length;
 
   const room = {
-    id: roomCount,
+    id: String(roomCount),
     doorTiles: [],
     floorColor: randomRgb(),
   };
@@ -94,6 +94,10 @@ export function addRoom(dungeon) {
           tile =>
             Object.keys(tile.doors).filter(dir => {
               const dirCoords = tileInDirection(tile.x, tile.y, dir);
+              console.log(
+                'checking against',
+                dungeon.tileToRoom[`${dirCoords.x},${dirCoords.y}`],
+              );
               return (
                 tile.doors[dir] === true &&
                 !dungeon.tileToRoom[`${dirCoords.x},${dirCoords.y}`]
@@ -104,7 +108,8 @@ export function addRoom(dungeon) {
       .reduce((acc, val) => (val ? acc.concat(val) : val), []);
 
     if (availableTiles.length === 0) {
-      throw new Error("couldn't add room! ahhh!");
+      console.warn("Couldn't add new room.");
+      return null;
     }
 
     const sourceTile = arrayRand(availableTiles);
@@ -119,8 +124,14 @@ export function addRoom(dungeon) {
       y: coords.y,
     });
 
+    const inv = inverseDir(startingDir);
+
     Object.assign(startingTile.doors, {
-      [inverseDir(startingDir)]: true,
+      [inv]: true,
+    });
+
+    Object.assign(startingTile.walls, {
+      [inv]: true,
     });
   }
 
@@ -162,6 +173,8 @@ export function addRoom(dungeon) {
 
     const direction = arrayRand(possibleDirections);
 
+    sourceTile.walls[direction] = false;
+
     const newTile = tileInDirection(sourceTile.x, sourceTile.y, direction);
     newTile.walls = {};
     newTile.doors = {};
@@ -174,6 +187,16 @@ export function addRoom(dungeon) {
     tilesInRoom[`${newTile.x},${newTile.y}`] = newTile;
     tiles.push(newTile);
   }
+
+  // we have to do this again to catch any staggling mis-marked walls
+  tiles.forEach(tile => {
+    ['left', 'top', 'right', 'bottom'].forEach(dir => {
+      const checking = tileInDirection(tile.x, tile.y, dir);
+      Object.assign(tile.walls, {
+        [dir]: !tilesInRoom[`${checking.x},${checking.y}`],
+      });
+    });
+  });
 
   const doorsNeeded = DOORS_PER_ROOM - room.doorTiles.length;
 
@@ -204,10 +227,12 @@ export function generateDungeon(initialRooms = 1) {
   for (let i = 0; i < initialRooms; i += 1) {
     const newRoom = addRoom(dungeon);
 
-    dungeon.rooms[newRoom.id] = newRoom;
-    newRoom.tiles.forEach(
-      tile => (dungeon.tileToRoom[`${tile.x},${tile.y}`] = newRoom.id),
-    );
+    if (newRoom) {
+      dungeon.rooms[newRoom.id] = newRoom;
+      newRoom.tiles.forEach(
+        tile => (dungeon.tileToRoom[`${tile.x},${tile.y}`] = newRoom.id),
+      );
+    }
   }
 
   return dungeon;

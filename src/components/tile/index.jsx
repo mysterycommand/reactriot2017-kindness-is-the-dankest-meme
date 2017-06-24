@@ -1,5 +1,5 @@
 import React from 'react';
-import { Rect, Group, Path } from 'react-konva';
+import { Rect, Group, Path, Text } from 'react-konva';
 import { objectOf, number, string, bool } from 'prop-types';
 
 const directions = ['top', 'right', 'bottom', 'left'];
@@ -18,7 +18,7 @@ const sidePoints = (x, y, width, height, direction) => {
   }
 };
 
-const Tile = ({ x, y, width, height, floorColor, walls, doors }) => {
+const Tile = ({ x, y, width, height, floorColor, walls, doors, roomId }) => {
   // const drawnWalls = Object.keys(walls).map(() => null);
   const drawnDoors = Object.keys(doors).map(() => null);
 
@@ -26,12 +26,12 @@ const Tile = ({ x, y, width, height, floorColor, walls, doors }) => {
   // let drawnDoors = [];
 
   directions.forEach(direction => {
-    console.log(walls);
     if (walls[direction]) {
       const points = sidePoints(x, y, width, height, direction);
 
       drawnWalls.push(
         <Path
+          key={`wall-${direction}`}
           data={[
             `M ${points[0].x} ${points[0].y}`,
             `L ${points[1].x} ${points[1].y}`,
@@ -53,11 +53,21 @@ const Tile = ({ x, y, width, height, floorColor, walls, doors }) => {
         width={width}
         height={height}
         fill={floorColor}
-        strokeEnabled={false}
+        strokeEnabled
+        strokeWidth={1}
+        stroke={floorColor}
       />
 
       {drawnWalls}
       {drawnDoors}
+
+      <Text
+        text={roomId}
+        x={x + width / 2 - 4}
+        y={y + height / 2 - 5}
+        fill={'#fefefe'}
+        strokeEnabled={false}
+      />
     </Group>
   );
 };
@@ -70,6 +80,7 @@ Tile.propTypes = {
   floorColor: string,
   walls: objectOf(bool),
   doors: objectOf(bool),
+  roomId: string.isRequired,
 };
 
 Tile.defaultProps = {

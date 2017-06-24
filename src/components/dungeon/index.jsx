@@ -1,12 +1,12 @@
 import React from 'react';
 import { Stage, Layer } from 'react-konva';
-import { shape, objectOf, arrayOf, number, bool } from 'prop-types';
+import { shape, objectOf, arrayOf, number, string, bool } from 'prop-types';
 
 import Room from 'components/room';
 
 const Dungeon = ({ dungeon }) => {
-  const w = 400;
-  const h = 400;
+  const w = 700;
+  const h = 700;
 
   const rooms = Object.keys(dungeon.rooms).map(roomId => {
     const room = dungeon.rooms[roomId];
@@ -17,6 +17,7 @@ const Dungeon = ({ dungeon }) => {
         tiles={room.tiles}
         w={w}
         h={h}
+        id={room.id}
       />
     );
   });
@@ -41,11 +42,11 @@ Dungeon.propTypes = {
   dungeon: shape({
     rooms: objectOf(
       shape({
-        id: number,
+        id: string,
         doorTiles: arrayOf(tileShape),
       }),
     ),
-    tileToRoom: objectOf(number),
+    tileToRoom: objectOf(string),
   }).isRequired,
 };
 

@@ -12,6 +12,8 @@ class App extends Component {
 
   componentDidMount() {
     this.fetch();
+
+    window.app = this;
   }
 
   handleClick = () => {
