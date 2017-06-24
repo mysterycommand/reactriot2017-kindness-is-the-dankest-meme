@@ -1,7 +1,7 @@
 import randomRgb from './random-rgb';
 
-const MIN_TILES_PER_ROOM = 3;
-const MAX_TILES_PER_ROOM = 8;
+const MIN_TILES_PER_ROOM = 4;
+const MAX_TILES_PER_ROOM = 12;
 const DOORS_PER_ROOM = 3;
 
 function hasWall(tile) {
@@ -106,9 +106,13 @@ export function addRoom(dungeon) {
     }
 
     const sourceTile = arrayRand(availableTiles);
-    const startingDirs = Object.keys(sourceTile.doors).filter(
-      dir => sourceTile.doors[dir] === true,
-    );
+    const startingDirs = Object.keys(sourceTile.doors).filter(dir => {
+      const checking = tileInDirection(sourceTile.x, sourceTile.y, dir);
+      return (
+        sourceTile.doors[dir] === true &&
+        !dungeon.tileToRoom[`${checking.x},${checking.y}`]
+      );
+    });
     const startingDir = arrayRand(startingDirs);
     const coords = tileInDirection(sourceTile.x, sourceTile.y, startingDir);
 
