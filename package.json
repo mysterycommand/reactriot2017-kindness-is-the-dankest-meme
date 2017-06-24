@@ -6,6 +6,17 @@
     "node": "^8.1.2",
     "npm": "^5.0.3"
   },
+  "files": [
+    "build",
+    "server"
+  ],
+  "main": "server/index.js",
+  "contributors": [
+    "Reza Akhavan <reza@akhavan.me> (https://github.com/jedireza)",
+    "Robbie Dawson <robhdawson@gmail.com> (https://github.com/robhdawson/)",
+    "Mark Fox <mark@ixel.org> (https://github.com/mfdj/)",
+    "Matt Hayes <matt@mysterycommand.com> (https://github.com/mysterycommand/)"
+  ],
   "dependencies": {
     "express": "^4.15.3",
     "express-ws": "^3.0.0",
