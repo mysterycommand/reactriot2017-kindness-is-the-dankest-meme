@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
-import { Circle } from 'react-konva';
+import { Group, Circle } from 'react-konva';
 import { number } from 'prop-types';
 
 import randomRgb from '../../utils/random-rgb';
 
 class Token extends Component {
   static propTypes = {
-    x: number.isRequired,
-    y: number.isRequired,
+    x: number,
+    y: number,
+    radius: number,
+  };
+
+  static defaultProps = {
+    x: 0,
+    y: 0,
+    radius: 10,
   };
 
   state = {
@@ -21,11 +28,30 @@ class Token extends Component {
   };
 
   render() {
-    const { x, y } = this.props;
+    const { x, y, radius } = this.props;
     const { fill } = this.state;
 
+    const strokeWidth = 8;
+    const halfStrokeWidth = strokeWidth / 2;
+
     return (
-      <Circle radius={30} x={x} y={y} fill={fill} onClick={this.onClick} />
+      <Group>
+        <Circle
+          radius={radius}
+          x={x}
+          y={y}
+          fill={fill}
+          onClick={this.onClick}
+        />
+        <Circle
+          radius={radius - halfStrokeWidth}
+          x={x}
+          y={y}
+          stroke={`rgba(0,0,0,0.15)`}
+          strokeWidth={strokeWidth}
+          onClick={this.onClick}
+        />
+      </Group>
     );
   }
 }
