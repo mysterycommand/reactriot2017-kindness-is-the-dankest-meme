@@ -13,7 +13,8 @@ const App = () => {
   return (
     <Stage className="app" width={w} height={h}>
       <Layer>
-        <Token x={hw} y={hh} radius={48} />
+        <Token x={hw - 60} y={hh} radius={48} face="star" />
+        <Token x={hw + 60} y={hh} radius={48} />
       </Layer>
     </Stage>
   );
