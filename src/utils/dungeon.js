@@ -164,7 +164,7 @@ export function addRoom(dungeon) {
     });
 
     if (possibleDirections.length === 0) {
-      console.warn("room's full");
+      // room has expanded to as large as it could. that's fine.
       break;
     }
 

@@ -1,35 +1,26 @@
 import React from 'react';
 import { Group } from 'react-konva';
-import { shape, objectOf, arrayOf, number, bool, string } from 'prop-types';
+import {
+  shape,
+  objectOf,
+  arrayOf,
+  func,
+  number,
+  bool,
+  string,
+} from 'prop-types';
 
 import Tile from 'components/tile';
 
-const BASE_TILE_SIZE = 40;
-
-const Room = ({ floorColor, tiles, w, h, id, zoomLevel, centerOffset }) => {
-  const tileSize = BASE_TILE_SIZE * zoomLevel;
-  const realCenter = { x: w / 2, y: h / 2 };
-
-  const mapCenter = (x, y) => {
-    const scaled = { x: x * tileSize, y: y * tileSize };
-
-    // 0, 0 was center before
-    const shifted = {
-      x: scaled.x + realCenter.x + centerOffset.x,
-      y: scaled.y + realCenter.y + centerOffset.y,
-    };
-
-    return shifted;
-  };
-
+const Room = ({ floorColor, tiles, id, transformPoint, tileSize }) => {
   const drawnTiles = tiles.map(tile => {
-    const center = mapCenter(tile.x, tile.y);
+    const center = transformPoint(tile);
 
     return (
       <Tile
         key={`${tile.x},${tile.y}`}
-        x={center.x - tileSize / 2}
-        y={center.y - tileSize / 2}
+        x={center.x}
+        y={center.y}
         width={tileSize}
         height={tileSize}
         floorColor={floorColor}
@@ -57,11 +48,9 @@ const tileShape = shape({
 Room.propTypes = {
   floorColor: string.isRequired,
   tiles: arrayOf(tileShape).isRequired,
-  w: number.isRequired,
-  h: number.isRequired,
   id: string.isRequired,
-  zoomLevel: number.isRequired,
-  centerOffset: shape({ x: number, y: number }).isRequired,
+  transformPoint: func.isRequired,
+  tileSize: number.isRequired,
 };
 
 export default Room;
