@@ -1,0 +1,6 @@
+@import 'global';
+
+.app {
+  @include size(100%);
+  @extend %flex-container;
+}
