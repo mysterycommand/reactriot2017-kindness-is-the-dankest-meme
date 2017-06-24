@@ -3,4 +3,5 @@
 .app {
   @include size(100%);
   @extend %flex-container;
+  flex-direction: column;
 }
