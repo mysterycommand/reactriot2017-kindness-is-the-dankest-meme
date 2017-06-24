@@ -57,7 +57,7 @@ module.exports = mergeSmart(base, {
   entry: [require.resolve('./polyfills'), paths.appIndexJs],
   output: {
     // The build folder.
-    path: paths.appBuild,
+    path: paths.clientBuild,
     // Generated JS file names (with nested folders).
     // There will be one main bundle, and one file per asynchronous chunk.
     // We don't currently advertise code splitting but Webpack supports it.
@@ -273,7 +273,7 @@ module.exports = mergeSmart(base, {
       staticFileGlobsIgnorePatterns: [/\.map$/, /asset-manifest\.json$/],
       // Work around Windows path issue in SWPrecacheWebpackPlugin:
       // https://github.com/facebookincubator/create-react-app/issues/2235
-      stripPrefix: `${paths.appBuild.replace(/\\/g, '/')}/`,
+      stripPrefix: `${paths.clientBuild.replace(/\\/g, '/')}/`,
     }),
     // Moment.js is an extremely popular library that bundles large locale files
     // by default due to how Webpack interprets its code. This is a practical

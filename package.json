@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "express": "^4.15.3",
     "konva": "^1.5.0",
     "react": "~15.5.1",
     "react-dom": "~15.5.0",
@@ -56,6 +57,8 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
+    "go": "node build/server.js",
+    "get-up-and-go": "node scripts/build.js && node build/server.js",
     "test": "node scripts/test.js --env=jsdom"
   },
   "jest": {
