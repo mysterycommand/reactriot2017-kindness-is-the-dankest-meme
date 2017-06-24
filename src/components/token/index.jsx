@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Group, Circle } from 'react-konva';
+import { Circle, Group, Path } from 'react-konva';
 import { number } from 'prop-types';
 
 import randomRgb from '../../utils/random-rgb';
@@ -31,25 +31,34 @@ class Token extends Component {
     const { x, y, radius } = this.props;
     const { fill } = this.state;
 
-    const strokeWidth = 8;
+    const strokeWidth = radius / 6;
     const halfStrokeWidth = strokeWidth / 2;
 
+    const pathWidth = radius * 1.1;
+    const pathHeight = pathWidth * 2 / 3;
+
     return (
-      <Group>
-        <Circle
-          radius={radius}
-          x={x}
-          y={y}
-          fill={fill}
-          onClick={this.onClick}
-        />
+      <Group onClick={this.onClick}>
+        <Circle radius={radius} x={x} y={y} fill={fill} />
         <Circle
           radius={radius - halfStrokeWidth}
           x={x}
           y={y}
-          stroke={`rgba(0,0,0,0.15)`}
+          stroke="rgba(0,0,0,0.15)"
           strokeWidth={strokeWidth}
-          onClick={this.onClick}
+        />
+        <Path
+          data={[
+            `M ${x - pathWidth / 2} ${y - pathHeight / 2}`,
+            `L ${x - pathWidth / 4.5} ${y}`,
+            `L ${x} ${y - pathHeight / 1.5}`,
+            `L ${x + pathWidth / 4.5} ${y}`,
+            `L ${x + pathWidth / 2} ${y - pathHeight / 2}`,
+            `L ${x + pathWidth / 2} ${y + pathHeight / 2}`,
+            `L ${x - pathWidth / 2} ${y + pathHeight / 2}`,
+            'Z',
+          ].join()}
+          fill="rgba(0,0,0,0.15)"
         />
       </Group>
     );
