@@ -1,4 +1,11 @@
+@import 'global';
+
+html, body, main {
+  @include size(100%);
+}
+
 body {
+  color: $copy;
   margin: 0;
   padding: 0;
   font-family: sans-serif;
