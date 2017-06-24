@@ -8,7 +8,7 @@ import './style.scss';
 import { generateDungeon } from '../../utils/dungeon';
 
 class App extends Component {
-  state = { text: 'fetching...', dungeon: generateDungeon(2) };
+  state = { text: 'fetching...', dungeon: generateDungeon(7) };
 
   componentDidMount() {
     this.fetch();
@@ -18,6 +18,7 @@ class App extends Component {
     this.setState(
       {
         text: 'fetching....',
+        dungeon: generateDungeon(7),
       },
       this.fetch,
     );
