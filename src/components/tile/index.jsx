@@ -1,5 +1,5 @@
 import React from 'react';
-import { Rect, Group, Path, Text } from 'react-konva';
+import { Rect, Group, Path } from 'react-konva';
 import { objectOf, number, string, bool } from 'prop-types';
 
 const directions = ['top', 'right', 'bottom', 'left'];
@@ -52,7 +52,7 @@ const Tile = ({ x, y, width, height, floorColor, walls, doors, roomId }) => {
 
       drawnWalls.push(
         <Path
-          key={`wall-${direction}`}
+          key={`${roomId}-wall-${direction}`}
           data={[
             `M ${points[0].x} ${points[0].y}`,
             `L ${points[1].x} ${points[1].y}`,
@@ -70,7 +70,7 @@ const Tile = ({ x, y, width, height, floorColor, walls, doors, roomId }) => {
 
       drawnDoors.push(
         <Path
-          key={`wall-${direction}`}
+          key={`${roomId}-door-${direction}`}
           data={[
             `M ${points[0].x} ${points[0].y}`,
             `L ${points[1].x} ${points[1].y}`,
@@ -99,14 +99,6 @@ const Tile = ({ x, y, width, height, floorColor, walls, doors, roomId }) => {
 
       {drawnWalls}
       {drawnDoors}
-
-      <Text
-        text={roomId}
-        x={x + width / 2 - 4}
-        y={y + height / 2 - 5}
-        fill={'#fefefe'}
-        strokeEnabled={false}
-      />
     </Group>
   );
 };

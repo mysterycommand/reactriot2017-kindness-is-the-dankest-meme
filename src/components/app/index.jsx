@@ -1,18 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { number } from 'prop-types';
+import { number, func } from 'prop-types';
 
 import Viewport from 'components/viewport';
 
 import style from './style.scss';
 
 import { generateDungeon } from '../../utils/dungeon';
+import { changeZoomLevel } from '../../ducks/viewport';
 
 class App extends Component {
   static propTypes = {
     width: number.isRequired,
     height: number.isRequired,
     zoomLevel: number.isRequired,
+
+    zoomIn: func.isRequired,
+    zoomOut: func.isRequired,
   };
 
   state = { dungeon: generateDungeon(7) };
@@ -27,6 +31,14 @@ class App extends Component {
     });
   };
 
+  zoomIn = () => {
+    this.props.zoomIn();
+  };
+
+  zoomOut = () => {
+    this.props.zoomOut();
+  };
+
   render() {
     const { width, height, zoomLevel } = this.props;
 
@@ -38,10 +50,18 @@ class App extends Component {
 
         <div className={style.menu}>
           <button onClick={this.handleClick}>new map</button>
+          <button onClick={this.zoomOut}>-</button>
+          <button onClick={this.zoomIn}>+</button>
         </div>
       </div>
     );
   }
 }
+const mapStateToProps = state => state.viewport;
 
-export default connect(state => state.viewport)(App);
+const mapDispatchToProps = dispatch => ({
+  zoomIn: () => dispatch(changeZoomLevel(0.1)),
+  zoomOut: () => dispatch(changeZoomLevel(-0.1)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

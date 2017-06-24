@@ -4,7 +4,7 @@ import { shape, objectOf, arrayOf, number, string, bool } from 'prop-types';
 
 import Room from 'components/room';
 
-const Dungeon = ({ dungeon, width, height }) => {
+const Dungeon = ({ dungeon, width, height, zoomLevel }) => {
   const rooms = Object.keys(dungeon.rooms).map(roomId => {
     const room = dungeon.rooms[roomId];
     return (
@@ -15,6 +15,7 @@ const Dungeon = ({ dungeon, width, height }) => {
         w={width}
         h={height}
         id={room.id}
+        zoomLevel={zoomLevel}
       />
     );
   });
@@ -45,6 +46,7 @@ Dungeon.propTypes = {
     ),
     tileToRoom: objectOf(string),
   }).isRequired,
+  zoomLevel: number.isRequired,
 };
 
 export default Dungeon;
