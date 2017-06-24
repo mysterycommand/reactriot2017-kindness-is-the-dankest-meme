@@ -36,7 +36,7 @@ class App extends Component {
 
     return (
       <div className="app">
-        <Stage className="app" width={w} height={h}>
+        <Stage className="stage" width={w} height={h}>
           <Layer>
             <Token x={hw} y={hh} radius={48} />
           </Layer>
