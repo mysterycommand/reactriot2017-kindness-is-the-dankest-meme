@@ -1,13 +1,13 @@
 const path = require('path');
 
 const express = require('express');
+const expressWs = require('express-ws');
 
 const { NODE_ENV, PORT } = process.env;
 
 const port = PORT || (NODE_ENV === 'development' ? 3001 : 3000);
 
-const app = express();
-require('express-ws')(app);
+const { app, getWss } = expressWs(express());
 
 if (NODE_ENV === 'development') {
   app.use((req, res, next) => {
@@ -22,20 +22,15 @@ if (NODE_ENV === 'development') {
 
 app.use(express.static(path.join(__dirname, '../build')));
 
-let connections = 0;
+const wss = getWss('/dungeon');
 app.ws('/dungeon', (ws, req) => {
-  connections++;
-
-  ws.on('close', () => {
-    connections--;
-  });
-
   ws.on('message', message => {
-    ws.send(
-      `you sent '${message}' to ${connections} ${connections === 1
-        ? 'person'
-        : 'people'}`,
-    );
+    const { size: s } = wss.clients;
+    wss.clients.forEach(client => {
+      client.send(
+        `someone sent '${message}' to ${s} ${s === 1 ? 'person' : 'people'}`,
+      );
+    });
   });
 });
 
