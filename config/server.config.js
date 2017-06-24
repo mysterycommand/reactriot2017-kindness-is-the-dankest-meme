@@ -1,3 +1,4 @@
+const { DefinePlugin } = require('webpack');
 const { delimiter } = require('path');
 
 const eslintFormatter = require('react-dev-utils/eslintFormatter');
@@ -58,4 +59,10 @@ module.exports = {
       },
     ],
   },
+
+  plugins: [
+    new DefinePlugin({
+      IS_DEV: process.env.NODE_ENV === 'development',
+    }),
+  ],
 };
