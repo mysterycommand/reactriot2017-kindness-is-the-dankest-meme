@@ -83,6 +83,32 @@
     ]
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "env": {
+      "browser": true
+    },
+    "extends": [
+      "airbnb",
+      "prettier",
+      "prettier/react"
+    ],
+    "plugins": [
+      "prettier"
+    ],
+    "rules": {
+      "prettier/prettier": [
+        "error",
+        {
+          "singleQuote": true,
+          "trailingComma": "all"
+        }
+      ]
+    },
+    "settings": {
+      "import/resolver": {
+        "webpack": {
+          "config": "config/webpack.config.base.js"
+        }
+      }
+    }
   }
 }
