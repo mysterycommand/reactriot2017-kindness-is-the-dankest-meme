@@ -76,11 +76,11 @@
     "whatwg-fetch": "^2.0.3"
   },
   "scripts": {
-    "dev": "node scripts/start.js",
-    "build": "node scripts/build.js",
-    "serve": "NODE_ENV=production node server/index.js",
-    "start": "yarn build && yarn serve",
-    "test": "node scripts/test.js --env=jsdom"
+    "dev": "node ./scripts/start.js",
+    "build": "node ./scripts/build.js",
+    "now-start": "NODE_ENV=production node ./server/index.js",
+    "start": "yarn build && yarn now-start",
+    "test": "node ./scripts/test.js --env=jsdom"
   },
   "jest": {
     "collectCoverageFrom": [
