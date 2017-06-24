@@ -52,4 +52,6 @@ module.exports = {
 
   components: resolveApp('src/components'),
   styles: resolveApp('src/styles'),
+
+  serverIndexJs: resolveApp('server/index.js'),
 };
