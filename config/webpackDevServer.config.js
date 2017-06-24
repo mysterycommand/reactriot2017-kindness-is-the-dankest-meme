@@ -1,5 +1,3 @@
-'use strict';
-
 const errorOverlayMiddleware = require('react-error-overlay/middleware');
 const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMiddleware');
 const config = require('./webpack.config.dev');
@@ -26,8 +24,8 @@ module.exports = function(proxy, allowedHost) {
     // So we will disable the host check normally, but enable it if you have
     // specified the `proxy` setting. Finally, we let you override it if you
     // really know what you're doing with a special environment variable.
-    disableHostCheck: !proxy ||
-      process.env.DANGEROUSLY_DISABLE_HOST_CHECK === 'true',
+    disableHostCheck:
+      !proxy || process.env.DANGEROUSLY_DISABLE_HOST_CHECK === 'true',
     // Enable gzip compression of generated files.
     compress: true,
     // Silence WebpackDevServer's own logs since they're generally not useful.
@@ -69,7 +67,7 @@ module.exports = function(proxy, allowedHost) {
     },
     // Enable HTTPS if the HTTPS environment variable is set to 'true'
     https: protocol === 'https',
-    host: host,
+    host,
     overlay: false,
     historyApiFallback: {
       // Paths with dots should still use the history fallback.
