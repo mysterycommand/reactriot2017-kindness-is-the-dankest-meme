@@ -1,24 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { number, func, shape } from 'prop-types';
+import { number, func } from 'prop-types';
 
 import Viewport from 'components/viewport';
 
 import style from './style.scss';
 
 import { generateDungeon } from '../../utils/dungeon';
-import { changeZoomLevel, changeCenterOffset } from '../../ducks/viewport';
+import { changeZoomLevel } from '../../ducks/viewport';
 
 class App extends Component {
   static propTypes = {
     width: number.isRequired,
     height: number.isRequired,
     zoomLevel: number.isRequired,
-    centerOffset: shape({ x: number, y: number }).isRequired,
-
-    zoomIn: func.isRequired,
-    zoomOut: func.isRequired,
-    changeCenter: func.isRequired,
+    changeZoomLevel: func.isRequired,
   };
 
   state = { dungeon: generateDungeon(7) };
@@ -27,49 +23,34 @@ class App extends Component {
     window.app = this;
   }
 
+  onScroll = e => {
+    this.props.changeZoomLevel(e.deltaY / 150);
+  };
+
   makeNew = () => {
     this.setState({
       dungeon: generateDungeon(7),
     });
   };
 
-  viewportClick = e => {
-    const offset = {
-      x: -1 * (e.evt.layerX - this.props.width / 2),
-      y: -1 * (e.evt.layerY - this.props.height / 2),
-    };
-
-    this.props.changeCenter(offset);
-  };
-
-  zoomIn = () => {
-    this.props.zoomIn();
-  };
-
-  zoomOut = () => {
-    this.props.zoomOut();
-  };
-
   render() {
-    const { width, height, zoomLevel, centerOffset } = this.props;
+    const { width, height, zoomLevel } = this.props;
 
     return (
-      <div className={style.app}>
+      <div className={style.app} onWheel={this.onScroll}>
         <Viewport
           {...{
             width,
             height,
             zoomLevel,
-            centerOffset,
-            onClick: this.viewportClick,
+            onScroll: this.onScroll,
             dungeon: this.state.dungeon,
+            centerOffset: { x: 0, y: 0 },
           }}
         />
 
         <div className={style.menu}>
           <button onClick={this.makeNew}>new map</button>
-          <button onClick={this.zoomOut}>-</button>
-          <button onClick={this.zoomIn}>+</button>
         </div>
       </div>
     );
@@ -78,9 +59,7 @@ class App extends Component {
 const mapStateToProps = state => state.viewport;
 
 const mapDispatchToProps = dispatch => ({
-  zoomIn: () => dispatch(changeZoomLevel(0.1)),
-  zoomOut: () => dispatch(changeZoomLevel(-0.1)),
-  changeCenter: offset => dispatch(changeCenterOffset(offset)),
+  changeZoomLevel: inc => dispatch(changeZoomLevel(inc)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
