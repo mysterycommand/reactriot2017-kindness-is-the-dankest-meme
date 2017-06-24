@@ -22,9 +22,20 @@ if (NODE_ENV === 'development') {
 
 app.use(express.static(path.join(__dirname, '../build')));
 
+let connections = 0;
 app.ws('/dungeon', (ws, req) => {
+  connections++;
+
+  ws.on('close', () => {
+    connections--;
+  });
+
   ws.on('message', message => {
-    ws.send(message);
+    ws.send(
+      `you sent '${message}' to ${connections} ${connections === 1
+        ? 'person'
+        : 'people'}`,
+    );
   });
 });
 
