@@ -16,8 +16,6 @@ const Room = ({ tiles, w, h }) => {
     // 0, 0 was center before
     const shifted = { x: scaled.x + realCenter.x, y: scaled.y + realCenter.y };
 
-    console.log(shifted);
-
     return shifted;
   };
 
