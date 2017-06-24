@@ -12,48 +12,36 @@ class App extends Component {
   static propTypes = {
     width: number.isRequired,
     height: number.isRequired,
+    zoomLevel: number.isRequired,
   };
 
-  state = { text: 'fetching...', dungeon: generateDungeon(7) };
+  state = { dungeon: generateDungeon(7) };
 
   componentDidMount() {
-    this.fetch();
-
     window.app = this;
   }
 
   handleClick = () => {
-    this.setState(
-      {
-        text: 'fetching....',
-        dungeon: generateDungeon(7),
-      },
-      this.fetch,
-    );
+    this.setState({
+      dungeon: generateDungeon(7),
+    });
   };
 
-  fetch() {
-    fetch(`${process.env.API_ROOT}/api/test`).then(r => r.json()).then(json => {
-      this.setState({
-        text: json.message,
-      });
-    });
-  }
-
   render() {
-    const { width, height } = this.props;
+    const { width, height, zoomLevel } = this.props;
 
     return (
       <div className={style.app}>
-        <Viewport {...{ width, height, dungeon: this.state.dungeon }} />
+        <Viewport
+          {...{ width, height, zoomLevel, dungeon: this.state.dungeon }}
+        />
 
         <div className={style.menu}>
-          <h1>{this.state.text}</h1>
-          <button onClick={this.handleClick}>a new one</button>
+          <button onClick={this.handleClick}>new map</button>
         </div>
       </div>
     );
   }
 }
 
-export default connect(state => state)(App);
+export default connect(state => state.viewport)(App);
