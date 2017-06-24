@@ -65,10 +65,10 @@
     "whatwg-fetch": "^2.0.3"
   },
   "scripts": {
-    "start": "node scripts/start.js",
+    "dev": "node scripts/start.js",
     "build": "node scripts/build.js",
     "serve": "NODE_ENV=production node server/index.js",
-    "prod": "yarn build && yarn serve",
+    "start": "yarn build && yarn serve",
     "test": "node scripts/test.js --env=jsdom"
   },
   "jest": {
