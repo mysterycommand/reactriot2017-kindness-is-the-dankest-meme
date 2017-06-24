@@ -1,12 +1,15 @@
-const express = require('express');
 const path = require('path');
 
+const express = require('express');
+
 const { NODE_ENV, PORT } = process.env;
-const __DEV__ = NODE_ENV === 'development';
+
+const port = PORT || (NODE_ENV === 'development' ? 3001 : 3000);
 
 const app = express();
+require('express-ws')(app);
 
-if (__DEV__) {
+if (NODE_ENV === 'development') {
   app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header(
@@ -19,6 +22,23 @@ if (__DEV__) {
 
 app.use(express.static(path.join(__dirname, '../build')));
 
+let connections = 0;
+app.ws('/dungeon', (ws, req) => {
+  connections++;
+
+  ws.on('close', () => {
+    connections--;
+  });
+
+  ws.on('message', message => {
+    ws.send(
+      `you sent '${message}' to ${connections} ${connections === 1
+        ? 'person'
+        : 'people'}`,
+    );
+  });
+});
+
 app.get('/api/test', (req, res) => {
   setTimeout(() => {
     const rand = Math.floor(Math.random() * 10);
@@ -28,7 +48,7 @@ app.get('/api/test', (req, res) => {
   }, 200);
 });
 
-if (!__DEV__) {
+if (!NODE_ENV === 'development') {
   app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../build', 'index.html'));
   });
@@ -37,8 +57,6 @@ if (!__DEV__) {
 app.use((req, res, next) => {
   res.status(404).send('oops :(');
 });
-
-const port = PORT || (__DEV__ ? 3001 : 3000);
 
 app.listen(port);
 
