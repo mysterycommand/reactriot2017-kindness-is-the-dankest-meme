@@ -22,7 +22,11 @@ export default function reducer(state = initialState, action) {
     }
 
     case CHANGE_ZOOM: {
-      const zoomLevel = state.zoomLevel + action.increment;
+      const zoomLevel = Math.min(
+        Math.max(state.zoomLevel + action.increment, 0.01),
+        25,
+      );
+
       return { ...state, zoomLevel };
     }
 
