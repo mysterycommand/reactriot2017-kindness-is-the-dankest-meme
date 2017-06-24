@@ -12,13 +12,9 @@ function hasWall(tile) {
 
 function canHaveDoor(tile) {
   return (
-    hasWall(tile) &&
-    !(
-      tile.doors.left &&
-      tile.doors.top &&
-      tile.doors.right &&
-      tile.doors.bottom
-    )
+    ['top', 'right', 'bottom', 'left'].filter(
+      dir => tile.walls[dir] && !tile.doors[dir],
+    ).length > 0
   );
 }
 
@@ -94,10 +90,7 @@ export function addRoom(dungeon) {
           tile =>
             Object.keys(tile.doors).filter(dir => {
               const dirCoords = tileInDirection(tile.x, tile.y, dir);
-              console.log(
-                'checking against',
-                dungeon.tileToRoom[`${dirCoords.x},${dirCoords.y}`],
-              );
+
               return (
                 tile.doors[dir] === true &&
                 !dungeon.tileToRoom[`${dirCoords.x},${dirCoords.y}`]
@@ -148,7 +141,7 @@ export function addRoom(dungeon) {
     const possibleTiles = tiles.filter(hasWall);
 
     if (possibleTiles.length === 0) {
-      console.log('what happened here');
+      console.warn('what happened here');
       break;
     }
 
@@ -167,7 +160,7 @@ export function addRoom(dungeon) {
     });
 
     if (possibleDirections.length === 0) {
-      console.log("room's full");
+      console.warn("room's full");
       break;
     }
 
@@ -205,7 +198,7 @@ export function addRoom(dungeon) {
     const tile = arrayRand(possibleTiles);
 
     const availableDirs = ['left', 'top', 'right', 'bottom'].filter(
-      dir => !tile.doors[dir],
+      dir => tile.walls[dir] && !tile.doors[dir],
     );
     const dir = arrayRand(availableDirs);
 

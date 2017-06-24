@@ -3,7 +3,7 @@ import { Rect, Group, Path, Text } from 'react-konva';
 import { objectOf, number, string, bool } from 'prop-types';
 
 const directions = ['top', 'right', 'bottom', 'left'];
-const sidePoints = (x, y, width, height, direction) => {
+const wallPoints = (x, y, width, height, direction) => {
   switch (direction) {
     case 'top':
       return [{ x, y }, { x: x + width, y }];
@@ -19,15 +19,12 @@ const sidePoints = (x, y, width, height, direction) => {
 };
 
 const Tile = ({ x, y, width, height, floorColor, walls, doors, roomId }) => {
-  // const drawnWalls = Object.keys(walls).map(() => null);
-  const drawnDoors = Object.keys(doors).map(() => null);
-
   const drawnWalls = [];
-  // let drawnDoors = [];
+  const drawnDoors = [];
 
   directions.forEach(direction => {
     if (walls[direction]) {
-      const points = sidePoints(x, y, width, height, direction);
+      const points = wallPoints(x, y, width, height, direction);
 
       drawnWalls.push(
         <Path
@@ -40,6 +37,24 @@ const Tile = ({ x, y, width, height, floorColor, walls, doors, roomId }) => {
           fillEnabled={false}
           stroke={'#444444'}
           strokeWidth={2}
+        />,
+      );
+    }
+
+    if (doors[direction]) {
+      const points = wallPoints(x, y, width, height, direction);
+
+      drawnDoors.push(
+        <Path
+          key={`wall-${direction}`}
+          data={[
+            `M ${points[0].x} ${points[0].y}`,
+            `L ${points[1].x} ${points[1].y}`,
+            'Z',
+          ].join(' ')}
+          fillEnabled={false}
+          stroke={'#efefef'}
+          strokeWidth={3}
         />,
       );
     }
