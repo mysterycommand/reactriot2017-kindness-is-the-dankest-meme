@@ -5,7 +5,7 @@ const paths = require('./paths');
 // Make sure that including paths.js after env.js will read .env variables.
 delete require.cache[require.resolve('./paths')];
 
-const { NODE_ENV } = process.env;
+const { NODE_ENV, PORT } = process.env;
 if (!NODE_ENV) {
   throw new Error(
     'The NODE_ENV environment variable is required but was not specified.',
@@ -57,6 +57,7 @@ const REACT_APP = /^REACT_APP_/i;
 
 function getClientEnvironment(publicUrl) {
   const API_ROOT = NODE_ENV !== 'production' ? 'http://localhost:3001' : '';
+  const port = PORT || (NODE_ENV === 'development' ? 3001 : 3000);
 
   const raw = Object.keys(process.env)
     .filter(key => REACT_APP.test(key))
@@ -75,6 +76,8 @@ function getClientEnvironment(publicUrl) {
         // images into the `src` and `import` them in code to get their paths.
         PUBLIC_URL: publicUrl,
         API_ROOT: API_ROOT,
+
+        PORT: port,
       },
     );
   // Stringify all values so we can feed into Webpack DefinePlugin
