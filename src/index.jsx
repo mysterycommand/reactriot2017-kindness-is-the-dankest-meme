@@ -5,12 +5,11 @@ import { createStore } from 'redux';
 
 import App from 'components/app';
 import registerServiceWorker from './registerServiceWorker';
-import reducers from './ducks';
+import reducers, { resize } from './ducks';
 
 import './style.scss';
 
-const initialState = {};
-const store = createStore(reducers, initialState);
+const store = createStore(reducers);
 
 ReactDOM.render(
   <Provider store={store}>
@@ -18,5 +17,12 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('root'),
 );
+
+function onResize({ target }) {
+  const { innerWidth: width, innerHeight: height } = target;
+  store.dispatch(resize(width, height));
+}
+window.addEventListener('resize', onResize);
+onResize({ target: window });
 
 registerServiceWorker();

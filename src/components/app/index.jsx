@@ -1,11 +1,18 @@
 import React, { Component } from 'react';
 import { Stage, Layer } from 'react-konva';
 import { connect } from 'react-redux';
+import { number } from 'prop-types';
+
 import Token from 'components/token';
 
 import './style.scss';
 
 class App extends Component {
+  static propTypes = {
+    width: number.isRequired,
+    height: number.isRequired,
+  };
+
   state = { text: 'fetching...' };
 
   componentDidMount() {
@@ -30,14 +37,13 @@ class App extends Component {
   }
 
   render() {
-    const w = 480;
-    const h = 270;
-    const hw = w / 2;
-    const hh = h / 2;
+    const { width, height } = this.props;
+    const hw = width / 2;
+    const hh = height / 2;
 
     return (
       <div className="app">
-        <Stage className="stage" width={w} height={h}>
+        <Stage className="stage" width={width} height={height}>
           <Layer>
             <Token x={hw} y={hh} radius={48} />
           </Layer>
