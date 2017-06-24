@@ -1,13 +1,23 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { number } from 'prop-types';
+
 import { Stage, Layer } from 'react-konva';
 import Token from 'components/token';
 import Dungeon from 'components/dungeon';
 
-import './style.scss';
+import Viewport from 'components/viewport';
+
+import style from './style.scss';
 
 import { generateDungeon } from '../../utils/dungeon';
 
 class App extends Component {
+  static propTypes = {
+    width: number.isRequired,
+    height: number.isRequired,
+  };
+
   state = { text: 'fetching...', dungeon: generateDungeon(7) };
 
   componentDidMount() {
@@ -35,18 +45,11 @@ class App extends Component {
   }
 
   render() {
-    const w = 480;
-    const h = 270;
-    const hw = w / 2;
-    const hh = h / 2;
+    const { width, height } = this.props;
 
     return (
-      <div className="app">
-        <Stage className="app" width={w} height={h}>
-          <Layer>
-            <Token x={hw} y={hh} radius={48} />
-          </Layer>
-        </Stage>
+      <div className={style.app}>
+        <Viewport {...{ width, height }} />
         <h1>{this.state.text}</h1>
         <button onClick={this.handleClick}>a new one</button>
 
@@ -56,4 +59,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default connect(state => state)(App);
