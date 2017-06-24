@@ -1,10 +1,17 @@
 import React, { Component } from 'react';
-import { Stage, Layer } from 'react-konva';
-import Token from 'components/token';
+import { connect } from 'react-redux';
+import { number } from 'prop-types';
 
-import './style.scss';
+import Viewport from 'components/viewport';
+
+import style from './style.scss';
 
 class App extends Component {
+  static propTypes = {
+    width: number.isRequired,
+    height: number.isRequired,
+  };
+
   state = { text: 'fetching...' };
 
   componentDidMount() {
@@ -29,19 +36,11 @@ class App extends Component {
   }
 
   render() {
-    const w = 480;
-    const h = 270;
-    const hw = w / 2;
-    const hh = h / 2;
+    const { width, height } = this.props;
 
     return (
-      <div className="app">
-        <Stage className="stage" width={w} height={h}>
-          <Layer>
-            <Token x={hw - 60} y={hh} radius={48} face="star" />
-            <Token x={hw + 60} y={hh} radius={48} />
-          </Layer>
-        </Stage>
+      <div className={style.app}>
+        <Viewport {...{ width, height }} />
         <h1>{this.state.text}</h1>
         <button onClick={this.handleClick}>a new one</button>
       </div>
@@ -49,4 +48,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default connect(state => state)(App);

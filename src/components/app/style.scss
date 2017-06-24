@@ -2,6 +2,9 @@
 
 .app {
   @include size(100%);
-  @extend %flex-container;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
   flex-direction: column;
 }
