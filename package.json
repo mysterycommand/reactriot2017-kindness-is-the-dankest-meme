@@ -2,6 +2,10 @@
   "name": "reactriot2017-kindness-is-the-dankest-meme",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "^8.1.2",
+    "npm": "^5.0.3"
+  },
   "dependencies": {
     "express": "^4.15.3",
     "konva": "^1.5.0",
