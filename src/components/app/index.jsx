@@ -17,6 +17,7 @@ import style from './style.scss';
 
 import { changeSocketZoom } from '../../ducks/viewport';
 import { socketAddRooms } from '../../ducks/dungeon';
+import { socketTryToMove } from '../../ducks/players';
 
 import distance from '../../utils/distance';
 
@@ -40,6 +41,7 @@ class App extends Component {
 
     changeZoomLevel: func.isRequired,
     addRooms: func.isRequired,
+    tryToMove: func.isRequired,
 
     dungeon: shape({
       rooms: objectOf(
@@ -110,6 +112,7 @@ class App extends Component {
 
   onTileClick = tile => {
     this.props.addRooms(tile);
+    this.props.tryToMove(tile);
   };
 
   render() {
@@ -148,6 +151,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   changeZoomLevel: inc => dispatch(changeSocketZoom(inc)),
   addRooms: tile => dispatch(socketAddRooms(tile)),
+  tryToMove: tile => dispatch(socketTryToMove(tile)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
