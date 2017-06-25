@@ -15,7 +15,7 @@ export default function reducer(state = initialState, action) {
 
   switch (type) {
     case FULL_SYNC: {
-      return action.payload.dungeon;
+      return action.dungeon;
     }
 
     default:
@@ -23,12 +23,8 @@ export default function reducer(state = initialState, action) {
   }
 }
 
-// export function addRooms({ x, y, doors }) {
-//   return { type: ADD_ROOMS, x, y, doors };
-// }
-
-export function fullSync(payload) {
-  return { type: FULL_SYNC, payload };
+export function fullSync(newFullState) {
+  return { type: FULL_SYNC, dungeon: newFullState.dungeon };
 }
 
 export function socketAddRooms({ x, y, doors }) {

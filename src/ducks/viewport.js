@@ -15,7 +15,7 @@ export default function reducer(state = initialState, action) {
 
   switch (type) {
     case FULL_SYNC: {
-      return action.payload.viewport;
+      return action.viewport;
     }
 
     case RESIZE: {
@@ -33,8 +33,8 @@ export default function reducer(state = initialState, action) {
   }
 }
 
-export function fullSync(payload) {
-  return { type: FULL_SYNC, payload };
+export function fullSync(newFullState) {
+  return { type: FULL_SYNC, viewport: newFullState.viewport };
 }
 
 export function resize(width, height) {
