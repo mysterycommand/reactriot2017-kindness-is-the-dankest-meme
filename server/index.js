@@ -113,6 +113,17 @@ app.ws('/dungeon', (ws, req) => {
       lastKnownState &&
       lastKnownState.players.length > 0
     ) {
+      const clientsForId = [];
+      wss.clients.forEach(c => {
+        if (c.id === json.id) {
+          clientsForId.push(c);
+        }
+      });
+
+      if (clientsForId.length > 1) {
+        return;
+      }
+
       const players = lastKnownState.players.filter(player => {
         return player.id !== json.id;
       });
