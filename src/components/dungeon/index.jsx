@@ -13,7 +13,7 @@ import {
 import Room from 'components/room';
 import Token from 'components/token';
 
-const BASE_TILE_SIZE = 20;
+const BASE_TILE_SIZE = 50;
 
 const Dungeon = ({ dungeon, width, height, zoomLevel, players, addRooms }) => {
   const tileSize = BASE_TILE_SIZE * zoomLevel;
