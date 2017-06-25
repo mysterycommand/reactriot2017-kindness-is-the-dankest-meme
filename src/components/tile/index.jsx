@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Rect, Group, Path } from 'react-konva';
-import { objectOf, number, string, bool } from 'prop-types';
+import { objectOf, number, string, bool, func } from 'prop-types';
+import { DIRECTIONS } from '../../utils/dungeon';
 
-const directions = ['top', 'right', 'bottom', 'left'];
 const wallPoints = (x, y, width, height, direction) => {
   switch (direction) {
     case 'top':
@@ -24,7 +24,7 @@ const doorPoints = (x, y, width, height, direction) => {
 
   switch (direction) {
     case 'top':
-      return [{ x: x + dw }, { x: x + width - dw, y }];
+      return [{ x: x + dw, y }, { x: x + width - dw, y }];
     case 'right':
       return [
         { x: x + width, y: y + dy },
@@ -42,68 +42,101 @@ const doorPoints = (x, y, width, height, direction) => {
   }
 };
 
-const Tile = ({ x, y, width, height, floorColor, walls, doors, roomId }) => {
-  const drawnWalls = [];
-  const drawnDoors = [];
+class Tile extends Component {
+  onClick = () => {
+    this.props.addRooms({
+      x: this.props.coords.x,
+      y: this.props.coords.y,
+      doors: this.props.doors,
+    });
+  };
 
-  const topLeft = { x: x - width / 2, y: y - height / 2 };
+  render() {
+    const {
+      x,
+      y,
+      width,
+      height,
+      floorColor,
+      walls,
+      doors,
+      roomId,
+    } = this.props;
 
-  directions.forEach(direction => {
-    if (walls[direction]) {
-      const points = wallPoints(topLeft.x, topLeft.y, width, height, direction);
+    const drawnWalls = [];
+    const drawnDoors = [];
 
-      drawnWalls.push(
-        <Path
-          key={`${roomId}-wall-${direction}`}
-          data={[
-            `M ${points[0].x} ${points[0].y}`,
-            `L ${points[1].x} ${points[1].y}`,
-            'Z',
-          ].join(' ')}
-          fillEnabled={false}
-          stroke={'#444444'}
-          strokeWidth={2}
-        />,
-      );
-    }
+    const topLeft = { x: x - width / 2, y: y - height / 2 };
 
-    if (doors[direction]) {
-      const points = doorPoints(topLeft.x, topLeft.y, width, height, direction);
+    DIRECTIONS.forEach(direction => {
+      if (walls[direction]) {
+        const points = wallPoints(
+          topLeft.x,
+          topLeft.y,
+          width,
+          height,
+          direction,
+        );
 
-      drawnDoors.push(
-        <Path
-          key={`${roomId}-door-${direction}`}
-          data={[
-            `M ${points[0].x} ${points[0].y}`,
-            `L ${points[1].x} ${points[1].y}`,
-            'Z',
-          ].join(' ')}
-          fillEnabled={false}
-          stroke={'#efefef'}
-          strokeWidth={2}
-        />,
-      );
-    }
-  });
+        drawnWalls.push(
+          <Path
+            key={`${roomId}-wall-${direction}`}
+            data={[
+              `M ${points[0].x} ${points[0].y}`,
+              `L ${points[1].x} ${points[1].y}`,
+              'Z',
+            ].join(' ')}
+            fillEnabled={false}
+            stroke={'#444444'}
+            strokeWidth={2}
+          />,
+        );
+      }
 
-  return (
-    <Group>
-      <Rect
-        x={topLeft.x}
-        y={topLeft.y}
-        width={width}
-        height={height}
-        fill={floorColor}
-        strokeEnabled
-        strokeWidth={1}
-        stroke={floorColor}
-      />
+      if (doors[direction]) {
+        const points = doorPoints(
+          topLeft.x,
+          topLeft.y,
+          width,
+          height,
+          direction,
+        );
 
-      {drawnWalls}
-      {drawnDoors}
-    </Group>
-  );
-};
+        drawnDoors.push(
+          <Path
+            key={`${roomId}-door-${direction}`}
+            data={[
+              `M ${points[0].x} ${points[0].y}`,
+              `L ${points[1].x} ${points[1].y}`,
+              'Z',
+            ].join(' ')}
+            fillEnabled={false}
+            stroke={'#efefef'}
+            strokeWidth={2}
+          />,
+        );
+      }
+    });
+
+    return (
+      <Group onClick={this.onClick}>
+        <Rect
+          x={topLeft.x}
+          y={topLeft.y}
+          width={width}
+          height={height}
+          fill={floorColor}
+          strokeEnabled
+          strokeWidth={1}
+          stroke={floorColor}
+        />
+
+        {drawnWalls}
+        {drawnDoors}
+      </Group>
+    );
+  }
+}
 
 Tile.propTypes = {
   x: number.isRequired,
@@ -114,6 +147,8 @@ Tile.propTypes = {
   walls: objectOf(bool),
   doors: objectOf(bool),
   roomId: string.isRequired,
+  addRooms: func.isRequired,
+  coords: objectOf(number).isRequired,
 };
 
 Tile.defaultProps = {

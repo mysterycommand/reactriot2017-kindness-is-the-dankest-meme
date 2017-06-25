@@ -1,13 +1,21 @@
 import React from 'react';
 import { Group } from 'react-konva';
-import { shape, objectOf, arrayOf, number, string, bool } from 'prop-types';
+import {
+  shape,
+  func,
+  objectOf,
+  arrayOf,
+  number,
+  string,
+  bool,
+} from 'prop-types';
 
 import Room from 'components/room';
 import Token from 'components/token';
 
-const BASE_TILE_SIZE = 40;
+const BASE_TILE_SIZE = 50;
 
-const Dungeon = ({ dungeon, width, height, zoomLevel, players }) => {
+const Dungeon = ({ dungeon, width, height, zoomLevel, players, addRooms }) => {
   const tileSize = BASE_TILE_SIZE * zoomLevel;
   const realCenter = { x: width / 2, y: height / 2 };
 
@@ -23,15 +31,18 @@ const Dungeon = ({ dungeon, width, height, zoomLevel, players }) => {
 
   const rooms = Object.keys(dungeon.rooms).map(roomId => {
     const room = dungeon.rooms[roomId];
+    const tiles = room.tileIds.map(id => dungeon.tiles[id]);
+
     return (
       <Room
         key={room.id}
         floorColor={room.floorColor}
-        tiles={room.tiles}
+        tiles={tiles}
         tileSize={tileSize}
         id={room.id}
         zoomLevel={zoomLevel}
         transformPoint={transformPoint}
+        addRooms={addRooms}
       />
     );
   });
@@ -87,6 +98,7 @@ Dungeon.propTypes = {
   }).isRequired,
   zoomLevel: number.isRequired,
   players: arrayOf(playerShape).isRequired,
+  addRooms: func.isRequired,
 };
 
 export default Dungeon;
