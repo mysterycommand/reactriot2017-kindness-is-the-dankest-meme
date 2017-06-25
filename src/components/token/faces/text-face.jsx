@@ -15,28 +15,20 @@ class TextFace extends Component {
     fill: 'black',
   };
 
-  state = {
-    width: 0,
-    height: 0,
-  };
-
-  componentWillReceiveProps() {
-    const { k } = this;
-
-    this.setState({
-      width: k.width(),
-      height: k.height(),
-    });
-  }
-
   render() {
     const { x, y, fontSize, text, fill } = this.props;
-    const { width, height } = this.state;
+
+    const ctx = document.createElement('canvas').getContext('2d');
+    ctx.font = `${fontSize}px Arial`;
+    const size = ctx.measureText(text);
+
+    // not perfect, but fine
+    const width = size.width;
+    const height = fontSize;
 
     return (
       <Group {...{ x, y }}>
         <Text
-          ref={k => (this.k = k)}
           {...{
             align: 'center',
             x: -width / 2,
