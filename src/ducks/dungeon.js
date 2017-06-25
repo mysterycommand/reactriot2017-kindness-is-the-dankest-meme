@@ -3,7 +3,7 @@ import {
   addRoom,
   tileInDirection,
   DIRECTIONS,
-  tileKey,
+  getTileId,
 } from '../utils/dungeon';
 
 const ADD_ROOMS = 'add_rooms';
@@ -17,23 +17,16 @@ export default function reducer(state = initialState, action) {
     case ADD_ROOMS: {
       const { x, y, doors } = action;
 
-      const newState = Object.assign({}, state);
+      let newState = { ...state };
 
       DIRECTIONS.forEach(dir => {
         const checking = tileInDirection(x, y, dir);
 
-        if (!doors[dir] || state.tileToRoom[tileKey(checking)]) {
+        if (!doors[dir] || state.tiles[getTileId(checking)]) {
           return;
         }
 
-        const newRoom = addRoom(newState, checking);
-
-        if (newRoom) {
-          newState.rooms[newRoom.id] = newRoom;
-          newRoom.tiles.forEach(
-            tile => (newState.tileToRoom[`${tile.x},${tile.y}`] = newRoom.id),
-          );
-        }
+        newState = addRoom(state, checking);
       });
 
       return newState;

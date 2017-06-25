@@ -2,25 +2,13 @@ import randomRgb from './random-rgb';
 
 const MIN_TILES_PER_ROOM = 24;
 const MAX_TILES_PER_ROOM = 58;
-const DOORS_PER_ROOM = 4;
+// const DOORS_PER_ROOM = 4;
 
 export const DIRECTIONS = ['top', 'right', 'bottom', 'left'];
+export const getTileId = tile => `${tile.x},${tile.y}`;
 
-export const tileKey = tile => `${tile.x},${tile.y}`;
-
-function hasWall(tile) {
-  return (
-    tile.walls.left || tile.walls.top || tile.walls.right || tile.walls.bottom
-  );
-}
-
-function canHaveDoor(tile) {
-  return (
-    ['top', 'right', 'bottom', 'left'].filter(
-      dir => tile.walls[dir] && !tile.doors[dir],
-    ).length > 0
-  );
-}
+const baseWalls = () =>
+  DIRECTIONS.reduce((acc, val) => Object.assign(acc, { [val]: true }), {});
 
 function inverseDir(direction) {
   switch (direction) {
@@ -58,236 +46,161 @@ function arrayRand(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-export function addRoom(dungeon, starting) {
+const getUnfinishedDoors = (tile, dungeon) =>
+  Object.keys(tile.doors).filter(direction => {
+    if (!tile.doors[direction]) {
+      return false;
+    }
+
+    const otherSideId = getTileId(tileInDirection(tile.x, tile.y, direction));
+    return !dungeon.tiles[otherSideId];
+  });
+
+const getTilesWithUnfinishedDoors = dungeon =>
+  Object.keys(dungeon.tiles).filter(tileId => {
+    const tile = dungeon.tiles[tileId];
+    const unfinishedDoors = getUnfinishedDoors(tile, dungeon);
+    return unfinishedDoors.length > 0;
+  });
+
+export function addRoom(originalDungeon, starting) {
+  const dungeon = Object.assign({}, originalDungeon);
   const roomCount = Object.keys(dungeon.rooms).length;
 
   const room = {
     id: String(roomCount),
-    doorTiles: [],
-    floorColor: randomRgb(),
+    tileIds: [],
+    doorTileIds: [],
+    floorColor: randomRgb,
   };
+  const roomTiles = {};
 
-  const tilesInRoom = {};
-
-  const tiles = [];
+  const addTileToRoom = tile => {
+    Object.assign(tile, { roomId: room.id });
+    roomTiles[tile.id] = tile;
+    room.tileIds.push(tile.id);
+  };
 
   const startingTile = {};
 
   if (starting) {
     Object.assign(startingTile, starting);
-
-    if (!startingTile.walls) {
-      startingTile.walls = {
-        left: true,
-        top: true,
-        right: true,
-        bottom: true,
-      };
-    }
-
-    if (!startingTile.doors) {
-      startingTile.doors = {};
-    }
-  } else {
+  } else if (roomCount === 0) {
     Object.assign(startingTile, {
-      walls: {
-        left: true,
-        top: true,
-        right: true,
-        bottom: true,
-      },
-      doors: {},
+      x: 0,
+      y: 0,
     });
-
-    if (roomCount === 0) {
-      Object.assign(startingTile, {
-        x: 0,
-        y: 0,
-      });
-    } else {
-      const availableTiles = Object.keys(dungeon.rooms)
-        .filter(r => dungeon.rooms[r].doorTiles.length > 0)
-        .map(r =>
-          dungeon.rooms[r].doorTiles.filter(
-            tile =>
-              Object.keys(tile.doors).filter(dir => {
-                const dirCoords = tileInDirection(tile.x, tile.y, dir);
-
-                return (
-                  tile.doors[dir] === true &&
-                  !dungeon.tileToRoom[`${dirCoords.x},${dirCoords.y}`]
-                );
-              }).length > 0,
-          ),
-        )
-        .reduce((acc, val) => (val ? acc.concat(val) : val), []);
-
-      if (availableTiles.length === 0) {
-        console.warn("Couldn't add new room.");
-        return null;
-      }
-
-      const sourceTile = arrayRand(availableTiles);
-      const startingDirs = Object.keys(sourceTile.doors).filter(dir => {
-        const checking = tileInDirection(sourceTile.x, sourceTile.y, dir);
-        return (
-          sourceTile.doors[dir] === true &&
-          !dungeon.tileToRoom[`${checking.x},${checking.y}`]
-        );
-      });
-      const startingDir = arrayRand(startingDirs);
-      const coords = tileInDirection(sourceTile.x, sourceTile.y, startingDir);
-
-      Object.assign(startingTile, {
-        x: coords.x,
-        y: coords.y,
-      });
-
-      const inv = inverseDir(startingDir);
-
-      Object.assign(startingTile.doors, {
-        [inv]: true,
-      });
-
-      Object.assign(startingTile.walls, {
-        [inv]: true,
-      });
+  } else {
+    const availableTiles = getTilesWithUnfinishedDoors(dungeon);
+    if (availableTiles.length === 0) {
+      console.warn("Couldn't add new room.");
+      return null;
     }
+
+    const sourceDoorTile = arrayRand(availableTiles);
+    const sourceDirection = arrayRand(
+      getUnfinishedDoors(sourceDoorTile, dungeon),
+    );
+    const startingTileCoords = tileInDirection(
+      sourceDoorTile.x,
+      sourceDoorTile.y,
+      sourceDirection,
+    );
+    Object.assign(startingTile, startingTileCoords);
   }
 
-  tiles.push(startingTile);
+  if (!startingTile.walls) {
+    startingTile.walls = baseWalls();
+  }
 
-  tilesInRoom[`${startingTile.x},${startingTile.y}`] = startingTile;
+  if (!startingTile.doors) {
+    startingTile.doors = {};
+  }
+
+  if (!startingTile.id) {
+    startingTile.id = getTileId(startingTile);
+  }
+
+  addTileToRoom(startingTile);
 
   const tileCount =
     Math.floor(Math.random() * (MAX_TILES_PER_ROOM - MIN_TILES_PER_ROOM)) +
     MIN_TILES_PER_ROOM;
 
-  while (tiles.length < tileCount) {
-    // pick a random tile that's on the wall
-    const possibleTiles = tiles.filter(
-      tile =>
-        ['top', 'right', 'bottom', 'left'].filter(dir => {
-          const checking = tileInDirection(tile.x, tile.y, dir);
-          const key = `${checking.x},${checking.y}`;
-          return (
-            tile.walls[dir] && !dungeon.tileToRoom[key] && !tilesInRoom[key]
-          );
-        }).length > 0,
-    );
+  while (room.tileIds.length < tileCount) {
+    // add a tile to a room. First, pick a tile in this room on a wall,
+    // that also doesn't have anything next to it
 
-    if (possibleTiles.length === 0) {
-      console.warn('what happened here');
+    const possibleNewTileLocations = room.tileIds
+      .map(tileId => {
+        const tile = roomTiles[tileId];
+
+        const openDirections = DIRECTIONS.filter(dir => {
+          const checking = getTileId(tileInDirection(tile.x, tile.y, dir));
+          return !(dungeon.tiles[checking] || roomTiles[checking]);
+        }).reduce((a, v) => a.concat(v), []);
+
+        return openDirections.map(dir => tileInDirection(tile.x, tile.y, dir));
+      })
+      .reduce((acc, val) => acc.concat(val), []);
+
+    if (possibleNewTileLocations.length === 0) {
+      // The room is as big as it's going to get. That's fine.
       break;
     }
 
-    const sourceTile = arrayRand(possibleTiles);
-
-    const possibleDirections = Object.keys(
-      sourceTile.walls,
-    ).filter(direction => {
-      const coords = tileInDirection(sourceTile.x, sourceTile.y, direction);
-      const coordsKey = `${coords.x},${coords.y}`;
-      return (
-        sourceTile.walls[direction] &&
-        !dungeon.tileToRoom[coordsKey] &&
-        !tilesInRoom[coordsKey]
-      );
+    const newTile = arrayRand(possibleNewTileLocations);
+    Object.assign(newTile, {
+      id: getTileId(newTile),
+      walls: baseWalls(),
+      doors: {},
     });
 
-    if (possibleDirections.length === 0) {
-      // room has expanded to as large as it could. that's fine.
-      break;
-    }
-
-    const direction = arrayRand(possibleDirections);
-
-    sourceTile.walls[direction] = false;
-
-    const newTile = tileInDirection(sourceTile.x, sourceTile.y, direction);
-    newTile.walls = {};
-    newTile.doors = {};
-
-    ['left', 'top', 'right', 'bottom'].forEach(dir => {
-      const checking = tileInDirection(newTile.x, newTile.y, dir);
-      newTile.walls[dir] = !tilesInRoom[`${checking.x},${checking.y}`];
-    });
-
-    tilesInRoom[`${newTile.x},${newTile.y}`] = newTile;
-    tiles.push(newTile);
+    addTileToRoom(newTile);
   }
 
-  // we have to do this again to catch any staggling mis-marked walls
-  tiles.forEach(tile => {
-    DIRECTIONS.forEach(dir => {
-      const checking = tileInDirection(tile.x, tile.y, dir);
-      const roomNeighbor = tilesInRoom[tileKey(checking)];
-      const otherNeighbor = dungeon.tileToRoom[tileKey(checking)];
-      Object.assign(tile.walls, {
-        [dir]: !roomNeighbor,
-      });
+  dungeon.rooms[room.id] = room;
 
-      if (otherNeighbor) {
-        const neighborRoom = dungeon.rooms[otherNeighbor];
-        const neighborDoors = neighborRoom.doorTiles.filter(
-          n => tileKey(n) === tileKey(checking),
-        );
+  room.tileIds.forEach(tileId => {
+    const tile = roomTiles[tileId];
+    dungeon.tiles[tileId] = tile;
+  });
+  room.tileIds.forEach(tileId => {
+    const tile = roomTiles[tileId];
 
-        if (neighborDoors.length === 0) {
-          return;
-        }
+    // Now check if the new tiles need walls or doors
+    DIRECTIONS.forEach(direction => {
+      const neighborId = getTileId(tileInDirection(tile.x, tile.y, direction));
+      const neighbor = dungeon.tiles[neighborId];
 
-        const neighborDoor = neighborDoors[0];
-
-        if (neighborDoor.doors[inverseDir(dir)]) {
-          Object.assign(tile.doors, {
-            [dir]: true,
-          });
-        }
+      if (!neighbor) {
+        tile.walls[direction] = true;
+        return;
       }
+
+      if (neighbor.roomId === room.id) {
+        tile.walls[direction] = false;
+        tile.doors[direction] = false;
+        return;
+      }
+
+      // here, we have a neighbor in another room
+      tile.walls[direction] = true;
+      tile.doors[direction] = neighbor.doors[inverseDir(direction)];
     });
   });
 
-  const doorsNeeded = DOORS_PER_ROOM - room.doorTiles.length;
-
-  for (let i = 0; i < doorsNeeded; i += 1) {
-    const possibleTiles = tiles.filter(hasWall).filter(canHaveDoor);
-
-    if (possibleTiles.length === 0) {
-      break;
-    }
-
-    const tile = arrayRand(possibleTiles);
-
-    const availableDirs = ['left', 'top', 'right', 'bottom'].filter(
-      dir => tile.walls[dir] && !tile.doors[dir],
-    );
-    const dir = arrayRand(availableDirs);
-
-    tile.doors[dir] = true;
-    room.doorTiles.push(tile);
-  }
-
-  room.tiles = tiles;
-
-  return room;
+  return dungeon;
 }
 
 export function generateDungeon(initialRooms = 1) {
-  const dungeon = {
+  let dungeon = {
     rooms: {},
-    tileToRoom: {},
+    tiles: {},
   };
 
   for (let i = 0; i < initialRooms; i += 1) {
-    const newRoom = addRoom(dungeon);
-
-    if (newRoom) {
-      dungeon.rooms[newRoom.id] = newRoom;
-      newRoom.tiles.forEach(
-        tile => (dungeon.tileToRoom[`${tile.x},${tile.y}`] = newRoom.id),
-      );
-    }
+    dungeon = addRoom(dungeon);
   }
 
   return dungeon;
