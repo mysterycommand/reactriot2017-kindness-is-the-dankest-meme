@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Group, Star, Text } from 'react-konva';
+import { Group, Star } from 'react-konva';
 import { number, string } from 'prop-types';
 
-import Coin from 'components/coin';
-import Crown from 'components/crown';
+import Coin from './coin';
+import Crown from './faces/crown';
+import TextFace from './faces/text-face';
 
 class Token extends Component {
   static propTypes = {
@@ -54,16 +55,12 @@ class Token extends Component {
         );
       default:
         return (
-          <Text
+          <TextFace
             {...{
-              x: x - radius,
-              y: y - radius * 4 / 5,
-              width: radius * 2,
-              height: radius * 2,
-              text: face,
-              fontFamily: 'arial',
+              x,
+              y,
               fontSize: radius * 3 / 2,
-              align: 'center',
+              text: face,
               fill,
             }}
           />
