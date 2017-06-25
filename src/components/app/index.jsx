@@ -111,9 +111,7 @@ class App extends Component {
           }}
         />
 
-        <div className={style.menu}>
-          <button onClick={this.makeNew}>new map</button>
-        </div>
+        <div className={style.menu} />
       </div>
     );
   }
