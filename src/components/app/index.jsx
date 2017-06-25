@@ -28,6 +28,8 @@ class App extends Component {
   }
 
   onScroll = e => {
+    e.stopPropagation();
+    e.preventDefault();
     this.props.changeZoomLevel(e.deltaY / 150);
   };
 
