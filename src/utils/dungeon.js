@@ -75,6 +75,19 @@ export function addRoom(dungeon, starting) {
 
   if (starting) {
     Object.assign(startingTile, starting);
+
+    if (!startingTile.walls) {
+      startingTile.walls = {
+        left: true,
+        top: true,
+        right: true,
+        bottom: true,
+      };
+    }
+
+    if (!startingTile.doors) {
+      startingTile.doors = {};
+    }
   } else {
     Object.assign(startingTile, {
       walls: {

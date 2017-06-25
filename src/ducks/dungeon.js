@@ -8,7 +8,7 @@ import {
 
 const ADD_ROOMS = 'add_rooms';
 
-const initialState = generateDungeon(3);
+const initialState = generateDungeon(1);
 
 export default function reducer(state = initialState, action) {
   const { type } = action;
@@ -26,7 +26,7 @@ export default function reducer(state = initialState, action) {
           return;
         }
 
-        const newRoom = addRoom(newState);
+        const newRoom = addRoom(newState, checking);
 
         if (newRoom) {
           newState.rooms[newRoom.id] = newRoom;
