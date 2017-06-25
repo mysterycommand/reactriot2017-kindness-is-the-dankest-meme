@@ -2,10 +2,12 @@ import randomRgb from './random-rgb';
 
 const MIN_TILES_PER_ROOM = 24;
 const MAX_TILES_PER_ROOM = 58;
-// const DOORS_PER_ROOM = 4;
+
+const DOORS_PER_ROOM = 4;
 
 export const DIRECTIONS = ['top', 'right', 'bottom', 'left'];
 export const getTileId = tile => `${tile.x},${tile.y}`;
+export const tileDoors = tile => DIRECTIONS.filter(dir => tile.doors[dir]);
 
 const baseWalls = () =>
   DIRECTIONS.reduce((acc, val) => Object.assign(acc, { [val]: true }), {});
@@ -171,7 +173,7 @@ export function addRoom(originalDungeon, starting) {
     // Now check if the new tiles need walls or doors
     DIRECTIONS.forEach(direction => {
       const neighborId = getTileId(tileInDirection(tile.x, tile.y, direction));
-      const neighbor = dungeon.tiles[neighborId];
+      const neighbor = dungeon.tiles[neighborId] || roomTiles[neighborId];
 
       if (!neighbor) {
         tile.walls[direction] = true;
@@ -189,6 +191,48 @@ export function addRoom(originalDungeon, starting) {
       tile.doors[direction] = neighbor.doors[inverseDir(direction)];
     });
   });
+
+  // now, finally, we add new doors to the room
+  let doorCount = room.tileIds.filter(
+    tileId => tileDoors(roomTiles[tileId]).length > 0,
+  ).length;
+
+  while (doorCount < DOORS_PER_ROOM) {
+    const availableTilesAndDirections = room.tileIds
+      .map(tileId => {
+        const tile = roomTiles[tileId];
+        const wallsToNowhere = DIRECTIONS.filter(dir => {
+          const checkingId = getTileId(tileInDirection(tile.x, tile.y, dir));
+          return (
+            tile.walls[dir] &&
+            !tile.doors[dir] &&
+            !roomTiles[checkingId] &&
+            !dungeon.tiles[checkingId]
+          );
+        });
+
+        return [tile, wallsToNowhere];
+      })
+      .reduce((tilesAndWalls, current) => {
+        if (current[1].length === 0) {
+          return tilesAndWalls;
+        }
+
+        return tilesAndWalls.concat([current]);
+      }, []);
+
+    if (availableTilesAndDirections.length === 0) {
+      break;
+    }
+
+    const choice = arrayRand(availableTilesAndDirections);
+    const tile = choice[0];
+    const dir = arrayRand(choice[1]);
+
+    tile.doors[dir] = true;
+
+    doorCount += 1;
+  }
 
   return dungeon;
 }

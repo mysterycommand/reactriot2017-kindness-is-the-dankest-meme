@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Rect, Group, Path } from 'react-konva';
 import { objectOf, number, string, bool, func } from 'prop-types';
+import { DIRECTIONS } from '../../utils/dungeon';
 
-const directions = ['top', 'right', 'bottom', 'left'];
 const wallPoints = (x, y, width, height, direction) => {
   switch (direction) {
     case 'top':
@@ -24,7 +24,7 @@ const doorPoints = (x, y, width, height, direction) => {
 
   switch (direction) {
     case 'top':
-      return [{ x: x + dw }, { x: x + width - dw, y }];
+      return [{ x: x + dw, y }, { x: x + width - dw, y }];
     case 'right':
       return [
         { x: x + width, y: y + dy },
@@ -68,7 +68,7 @@ class Tile extends Component {
 
     const topLeft = { x: x - width / 2, y: y - height / 2 };
 
-    directions.forEach(direction => {
+    DIRECTIONS.forEach(direction => {
       if (walls[direction]) {
         const points = wallPoints(
           topLeft.x,
