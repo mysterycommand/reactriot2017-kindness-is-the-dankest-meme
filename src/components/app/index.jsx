@@ -55,7 +55,11 @@ class App extends Component {
   }
 
   onScroll = e => {
-    this.props.changeZoomLevel(e.deltaY / 150);
+    const max = 2;
+
+    this.props.changeZoomLevel(
+      Math.max(Math.min(e.deltaY / 150, max), -1 * max),
+    );
   };
 
   getPlayers = dungeon => {
