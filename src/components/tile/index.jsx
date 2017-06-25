@@ -7,6 +7,11 @@ import Door from './door';
 import { DIRECTIONS } from '../../utils/dungeon';
 
 class Tile extends Component {
+  state = {
+    fill: `rgb(${150 + Math.floor(Math.random() * 20)},${135 +
+      Math.floor(Math.random() * 20)},${100 + Math.floor(Math.random() * 20)})`,
+  };
+
   onClick = () => {
     this.props.addRooms({
       x: this.props.coords.x,
@@ -16,16 +21,8 @@ class Tile extends Component {
   };
 
   render() {
-    const {
-      x,
-      y,
-      width,
-      height,
-      floorColor,
-      walls,
-      doors,
-      roomId,
-    } = this.props;
+    const { x, y, width, height, walls, doors, roomId } = this.props;
+    const { fill } = this.state;
 
     const drawnWalls = [];
     const drawnDoors = [];
@@ -71,10 +68,10 @@ class Tile extends Component {
           y={topLeft.y}
           width={width}
           height={height}
-          fill={floorColor}
+          fill={fill}
           strokeEnabled
           strokeWidth={1}
-          stroke={floorColor}
+          stroke="#b09d79"
         />
 
         {drawnWalls}
@@ -89,7 +86,6 @@ Tile.propTypes = {
   y: number.isRequired,
   width: number.isRequired,
   height: number.isRequired,
-  floorColor: string,
   walls: objectOf(bool),
   doors: objectOf(bool),
   roomId: string.isRequired,

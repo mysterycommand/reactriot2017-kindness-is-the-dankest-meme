@@ -62,7 +62,6 @@ const Dungeon = ({ dungeon, width, height, zoomLevel, players, addRooms }) => {
   return (
     <Group>
       {rooms}
-
       <Group>
         {drawnPlayers}
       </Group>
