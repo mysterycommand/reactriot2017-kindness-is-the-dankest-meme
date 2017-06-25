@@ -15,9 +15,8 @@ import Viewport from 'components/viewport';
 import style from './style.scss';
 
 import { changeSocketZoom } from '../../ducks/viewport';
-import { addRooms } from '../../ducks/dungeon';
+import { socketAddRooms } from '../../ducks/dungeon';
 
-import randomRgb from '../../utils/random-rgb';
 import distance from '../../utils/distance';
 
 const { max, min } = Math;
@@ -107,31 +106,29 @@ class App extends Component {
     });
   };
 
-  getPlayers = dungeon => {
-    const players = [
-      {
-        id: '1',
-        fill: randomRgb(),
-        face: 'crown',
-      },
-      {
-        id: '2',
-        fill: randomRgb(),
-        face: 'star',
-      },
-    ];
-
-    players.forEach(player => {
-      const tileIds = Object.keys(dungeon.tiles);
-      const tile =
-        dungeon.tiles[tileIds[Math.floor(Math.random() * tileIds.length)]];
-
-      Object.assign(player, {
-        x: tile.x,
-        y: tile.y,
-      });
-    });
-
+  getPlayers = () => {
+    // const players = [
+    //   {
+    //     id: '1',
+    //     fill: randomRgb(),
+    //     face: 'crown',
+    //   },
+    //   {
+    //     id: '2',
+    //     fill: randomRgb(),
+    //     face: 'star',
+    //   },
+    // ];
+    // players.forEach(player => {
+    //   const tileIds = Object.keys(dungeon.tiles);
+    //   const tile =
+    //     dungeon.tiles[tileIds[Math.floor(Math.random() * tileIds.length)]];
+    //   Object.assign(player, {
+    //     x: tile.x,
+    //     y: tile.y,
+    //   });
+    // });
+    const players = [];
     return players;
   };
 
@@ -177,7 +174,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   changeZoomLevel: inc => dispatch(changeSocketZoom(inc)),
-  addRooms: tile => dispatch(addRooms(tile)),
+  addRooms: tile => dispatch(socketAddRooms(tile)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
