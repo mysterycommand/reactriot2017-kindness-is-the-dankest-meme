@@ -1,25 +1,14 @@
-const { NODE_ENV, PORT } = process.env;
-const { hostname, protocol } = location;
+import * as ducks from '../ducks';
 
-const isNotProd = NODE_ENV !== 'production';
-const isDev = NODE_ENV === 'development';
-
-const port = isNotProd ? PORT || (isDev ? 3001 : 3000) : '';
-const secure = protocol === 'https:' ? 's' : '';
-const url = `ws${secure}://${[hostname, port].join(':')}/dungeon`;
-
-export default function createWindowDispatcher(/* store */) {
-  const ws = new WebSocket(url);
-
+export default function createWindowDispatcher(socket, store) {
   function onMessage({ data }) {
-    // eslint-disable-next-line no-console
-    console.log(data);
+    const { duck, action, payload } = JSON.parse(data);
+    console.log(duck, action, payload);
+    store.dispatch(ducks[duck][action](payload));
   }
+  socket.addEventListener('message', onMessage);
 
-  function onOpen() {
-    ws.send('join');
-  }
-
-  ws.addEventListener('message', onMessage);
-  ws.addEventListener('open', onOpen);
+  // these might come in handy for some kind of JOIN_DUNGEON action?
+  // function onOpen() {}
+  // socket.addEventListener('open', onOpen);
 }
