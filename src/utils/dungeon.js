@@ -95,6 +95,7 @@ export function addRoom(originalDungeon, starting) {
   } else {
     const availableTiles = getTilesWithUnfinishedDoors(dungeon);
     if (availableTiles.length === 0) {
+      // eslint-disable-next-line no-console
       console.warn("Couldn't add new room.");
       return null;
     }
