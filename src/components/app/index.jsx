@@ -18,6 +18,9 @@ import { changeSocketZoom } from '../../ducks/viewport';
 import { addRooms } from '../../ducks/dungeon';
 
 import randomRgb from '../../utils/random-rgb';
+import distance from '../../utils/distance';
+
+const { max, min } = Math;
 
 const tileShape = shape({
   x: number,
@@ -46,7 +49,7 @@ class App extends Component {
     }).isRequired,
   };
 
-  state = { players: [] };
+  state = { players: [], touchDistance: -1 };
 
   componentDidMount() {
     window.app = this;
@@ -58,11 +61,50 @@ class App extends Component {
     e.stopPropagation();
     e.preventDefault();
 
-    const max = 2;
-
+    const deltaMax = 2;
     this.props.changeZoomLevel(
-      Math.max(Math.min(e.deltaY / 150, max), -1 * max),
+      Math.max(Math.min(e.deltaY / 150, deltaMax), -1 * deltaMax),
     );
+  };
+
+  onTouchStart = event => {
+    const { touches } = event;
+    if (touches.length !== 2) {
+      return;
+    }
+
+    event.stopPropagation();
+    event.preventDefault();
+
+    const { clientX: x0, clientY: y0 } = touches[0];
+    const { clientX: x1, clientY: y1 } = touches[1];
+    const touchDistance = distance(x0, y0, x1, y1);
+
+    this.setState({
+      touchDistance,
+    });
+  };
+
+  onTouchMove = event => {
+    const { touches } = event;
+    if (touches.length !== 2) {
+      return;
+    }
+
+    event.stopPropagation();
+    event.preventDefault();
+
+    const { clientX: x0, clientY: y0 } = touches[0];
+    const { clientX: x1, clientY: y1 } = touches[1];
+    const touchDistance = distance(x0, y0, x1, y1);
+
+    const deltaMax = 2;
+    const delta = this.state.touchDistance - touchDistance;
+    this.props.changeZoomLevel(max(min(-delta / 10, deltaMax), -deltaMax));
+
+    this.setState({
+      touchDistance,
+    });
   };
 
   getPlayers = dungeon => {
@@ -101,7 +143,14 @@ class App extends Component {
     const { width, height, zoomLevel, dungeon } = this.props;
 
     return (
-      <div className={style.app} onWheel={this.onScroll}>
+      <div
+        className={style.app}
+        onWheel={this.onScroll}
+        {...{
+          onTouchStart: this.onTouchStart,
+          onTouchMove: this.onTouchMove,
+        }}
+      >
         <Viewport
           {...{
             width,
@@ -113,8 +162,6 @@ class App extends Component {
             players: this.state.players,
           }}
         />
-
-        <div className={style.menu} />
       </div>
     );
   }
