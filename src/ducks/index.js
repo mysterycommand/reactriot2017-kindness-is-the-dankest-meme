@@ -14,9 +14,16 @@ export { viewportActions as viewport };
 export { dungeonActions as dungeon };
 export { playersActions as players };
 
+export const LOCAL_STORAGE_KEY = 'dungeon-player';
+
 export const fullSync = {
   fullSync: payload => {
     if (payload) {
+      if (payload.players) {
+        const you = payload.players.filter(p => p.isYou)[0];
+        localStorage.setItem(LOCAL_STORAGE_KEY, you.id);
+      }
+
       return dispatch => {
         dispatch(viewportActions.fullSync(payload));
         dispatch(dungeonActions.fullSync(payload));

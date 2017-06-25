@@ -30,26 +30,54 @@ const uuid = () => String(Math.random());
 
 let lastKnownState = null;
 
+const getTileInCenterRoom = () => {
+  if (!lastKnownState || !lastKnownState.dungeon) {
+    return { x: 0, y: 0 };
+  }
+
+  const room = lastKnownState.dungeon.rooms[0];
+  const tileId = room.tileIds[Math.floor(Math.random() * room.tileIds.length)];
+  return lastKnownState.dungeon.tiles[tileId];
+};
+
 const assignCurrentPlayer = (client, players) => {
   players.forEach(player => (player.isYou = player.id === client.id));
 };
 
 app.ws('/dungeon', (ws, req) => {
   ws.on('message', message => {
-    if (message === 'join') {
-      const newPlayerId = uuid();
-      ws.id = newPlayerId;
+    const json = JSON.parse(message);
 
-      const newPlayer = {
-        id: newPlayerId,
-        fill: '#cecece',
-        face: getRandomFace(),
-        x: Math.floor(Math.random() * 10) - 5,
-        y: Math.floor(Math.random() * 10) - 5,
-      };
+    if (json.isJoin) {
+      const playerId = json.id || uuid();
+      ws.id = playerId;
 
       const players = lastKnownState ? lastKnownState.players || [] : [];
-      players.push(newPlayer);
+      let joinedPlayer = null;
+
+      if (players.length > 0) {
+        const player = lastKnownState.players.filter(player => {
+          return player.id === playerId;
+        });
+
+        if (player.length) {
+          joinedPlayer = player[0];
+        }
+      }
+
+      if (!joinedPlayer) {
+        const tile = getTileInCenterRoom();
+
+        joinedPlayer = {
+          id: playerId,
+          fill: '#cecece',
+          face: getRandomFace(),
+          x: tile.x,
+          y: tile.y,
+        };
+
+        players.push(joinedPlayer);
+      }
 
       const message = {
         duck: 'fullSync',
@@ -65,8 +93,6 @@ app.ws('/dungeon', (ws, req) => {
       });
       return;
     }
-
-    const json = JSON.parse(message);
 
     wss.clients.forEach(client => {
       assignCurrentPlayer(client, json.payload.players);

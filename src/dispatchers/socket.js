@@ -7,9 +7,10 @@ export default function createWindowDispatcher(socket, store) {
   }
   socket.addEventListener('message', onMessage);
 
-  // these might come in handy for some kind of JOIN_DUNGEON action?
   function onOpen() {
-    socket.send('join');
+    const existingPlayerId = localStorage.getItem(ducks.LOCAL_STORAGE_KEY);
+    socket.send(JSON.stringify({ isJoin: true, id: existingPlayerId }));
   }
+
   socket.addEventListener('open', onOpen);
 }
