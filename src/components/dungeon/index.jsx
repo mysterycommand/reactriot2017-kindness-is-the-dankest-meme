@@ -31,11 +31,13 @@ const Dungeon = ({ dungeon, width, height, zoomLevel, players, addRooms }) => {
 
   const rooms = Object.keys(dungeon.rooms).map(roomId => {
     const room = dungeon.rooms[roomId];
+    const tiles = room.tileIds.map(id => dungeon.tiles[id]);
+
     return (
       <Room
         key={room.id}
         floorColor={room.floorColor}
-        tiles={room.tiles}
+        tiles={tiles}
         tileSize={tileSize}
         id={room.id}
         zoomLevel={zoomLevel}

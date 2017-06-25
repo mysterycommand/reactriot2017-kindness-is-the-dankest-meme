@@ -71,7 +71,7 @@ export function addRoom(originalDungeon, starting) {
     id: String(roomCount),
     tileIds: [],
     doorTileIds: [],
-    floorColor: randomRgb,
+    floorColor: randomRgb(),
   };
   const roomTiles = {};
 

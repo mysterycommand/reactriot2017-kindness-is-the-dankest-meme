@@ -59,10 +59,6 @@ class App extends Component {
   };
 
   getPlayers = dungeon => {
-    const tiles = Object.keys(dungeon.rooms)
-      .map(id => dungeon.rooms[id].tiles)
-      .reduce((acc, val) => acc.concat(val), []);
-
     const players = [
       {
         id: '1',
@@ -77,7 +73,10 @@ class App extends Component {
     ];
 
     players.forEach(player => {
-      const tile = tiles[Math.floor(Math.random() * tiles.length)];
+      const tileIds = Object.keys(dungeon.tiles);
+      const tile =
+        dungeon.tiles[tileIds[Math.floor(Math.random() * tileIds.length)]];
+
       Object.assign(player, {
         x: tile.x,
         y: tile.y,
