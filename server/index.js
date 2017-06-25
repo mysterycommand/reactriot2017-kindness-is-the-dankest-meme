@@ -45,6 +45,16 @@ const assignCurrentPlayer = (client, players) => {
   players.forEach(player => (player.isYou = player.id === client.id));
 };
 
+const handleWsError = e => {
+  if (e) {
+    // these are often fine - i.e. trying to send to a closed connection.
+    // just need to catch them somehow, and might as well log.
+    // (note: this always happens on "leave", because its sent as a connection
+    // is closing.)
+    console.log('socket error: ' + e);
+  }
+};
+
 app.ws('/dungeon', (ws, req) => {
   ws.on('message', message => {
     const json = JSON.parse(message);
@@ -90,14 +100,43 @@ app.ws('/dungeon', (ws, req) => {
 
       wss.clients.forEach(client => {
         assignCurrentPlayer(client, message.payload.players);
-        client.send(JSON.stringify(message));
+        client.send(JSON.stringify(message), handleWsError);
       });
+
+      lastKnownState = message.payload;
+      return;
+    }
+
+    if (
+      json.isLeave &&
+      json.id &&
+      lastKnownState &&
+      lastKnownState.players.length > 0
+    ) {
+      const players = lastKnownState.players.filter(player => {
+        return player.id !== json.id;
+      });
+
+      const message = {
+        duck: 'fullSync',
+        action: 'fullSync',
+        payload: Object.assign(lastKnownState || {}, {
+          players,
+        }),
+      };
+
+      wss.clients.forEach(client => {
+        assignCurrentPlayer(client, message.payload.players);
+        client.send(JSON.stringify(message), handleWsError);
+      });
+
+      lastKnownState = message.payload;
       return;
     }
 
     wss.clients.forEach(client => {
       assignCurrentPlayer(client, json.payload.players);
-      client.send(JSON.stringify(json));
+      client.send(JSON.stringify(json), handleWsError);
     });
 
     lastKnownState = json.payload;

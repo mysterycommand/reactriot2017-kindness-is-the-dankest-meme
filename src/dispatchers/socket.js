@@ -13,4 +13,9 @@ export default function createWindowDispatcher(socket, store) {
   }
 
   socket.addEventListener('open', onOpen);
+
+  window.addEventListener('unload', () => {
+    const playerId = localStorage.getItem(ducks.LOCAL_STORAGE_KEY);
+    socket.send(JSON.stringify({ isLeave: true, id: playerId }));
+  });
 }
