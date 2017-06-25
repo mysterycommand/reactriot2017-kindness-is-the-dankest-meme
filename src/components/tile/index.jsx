@@ -21,7 +21,7 @@ class Tile extends Component {
   };
 
   render() {
-    const { x, y, width, height, walls, doors, roomId } = this.props;
+    const { x, y, width, height, walls, doors, roomId, zoomLevel } = this.props;
     const { fill } = this.state;
 
     const drawnWalls = [];
@@ -40,6 +40,7 @@ class Tile extends Component {
               width,
               height,
               direction,
+              zoomLevel,
             }}
           />,
         );
@@ -55,6 +56,7 @@ class Tile extends Component {
               width,
               height,
               direction,
+              zoomLevel,
             }}
           />,
         );
@@ -91,6 +93,7 @@ Tile.propTypes = {
   roomId: string.isRequired,
   addRooms: func.isRequired,
   coords: objectOf(number).isRequired,
+  zoomLevel: number.isRequired,
 };
 
 Tile.defaultProps = {

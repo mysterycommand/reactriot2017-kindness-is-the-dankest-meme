@@ -19,6 +19,7 @@ const Room = ({
   transformPoint,
   tileSize,
   addRooms,
+  zoomLevel,
 }) => {
   const drawnTiles = tiles.map(tile => {
     const center = transformPoint(tile);
@@ -30,6 +31,7 @@ const Room = ({
         y={center.y}
         width={tileSize}
         height={tileSize}
+        zoomLevel={zoomLevel}
         floorColor={floorColor}
         walls={tile.walls}
         doors={tile.doors}
@@ -61,6 +63,7 @@ Room.propTypes = {
   transformPoint: func.isRequired,
   tileSize: number.isRequired,
   addRooms: func.isRequired,
+  zoomLevel: number.isRequired,
 };
 
 export default Room;
