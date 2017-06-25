@@ -12,7 +12,14 @@ import {
 
 import Tile from 'components/tile';
 
-const Room = ({ floorColor, tiles, id, transformPoint, tileSize }) => {
+const Room = ({
+  floorColor,
+  tiles,
+  id,
+  transformPoint,
+  tileSize,
+  addRooms,
+}) => {
   const drawnTiles = tiles.map(tile => {
     const center = transformPoint(tile);
 
@@ -27,6 +34,8 @@ const Room = ({ floorColor, tiles, id, transformPoint, tileSize }) => {
         walls={tile.walls}
         doors={tile.doors}
         roomId={id}
+        addRooms={addRooms}
+        coords={{ x: tile.x, y: tile.y }}
       />
     );
   });
@@ -51,6 +60,7 @@ Room.propTypes = {
   id: string.isRequired,
   transformPoint: func.isRequired,
   tileSize: number.isRequired,
+  addRooms: func.isRequired,
 };
 
 export default Room;
