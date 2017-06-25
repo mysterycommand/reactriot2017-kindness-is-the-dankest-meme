@@ -11,14 +11,18 @@ export default combineReducers({
 export { dungeonActions as dungeon };
 export { playersActions as players };
 
-export const LOCAL_STORAGE_KEY = 'dungeon-player';
+export const LOCAL_STORAGE_KEY = 'dungeon-full-player';
+
+export const savePlayer = (player = {}) => {
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(player));
+};
 
 export const fullSync = {
   fullSync: payload => {
     if (payload) {
       if (payload.players) {
         const you = payload.players.filter(p => p.isYou)[0];
-        localStorage.setItem(LOCAL_STORAGE_KEY, you.id);
+        savePlayer(you);
       }
 
       return dispatch => {
