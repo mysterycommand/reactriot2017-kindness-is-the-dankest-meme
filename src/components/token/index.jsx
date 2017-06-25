@@ -19,7 +19,7 @@ class Token extends Component {
   static defaultProps = {
     x: 0,
     y: 0,
-    radius: 10,
+    radius: 12,
     face: 'crown',
     fill: 'rgba(255,255,255,1)',
     highlight: false,
@@ -71,18 +71,10 @@ class Token extends Component {
   }
 
   getHighlight() {
-    if (this.props.highlight) {
-      return (
-        <Coin
-          x={this.props.x}
-          y={this.props.y}
-          radius={this.props.radius + 3}
-          fill={'rgba(0,0,0,0.5)'}
-        />
-      );
-    }
-
-    return null;
+    const { x, y, radius: r, highlight } = this.props;
+    return highlight
+      ? <Coin {...{ x, y, radius: r + 3, fill: 'rgba(0,0,0,0.5)' }} />
+      : null;
   }
 
   render() {

@@ -1,48 +1,17 @@
 import React, { Component } from 'react';
-import { Rect, Group, Path } from 'react-konva';
+import { Rect, Group } from 'react-konva';
 import { objectOf, number, string, bool, func } from 'prop-types';
+
+import Wall from './wall';
+import Door from './door';
 import { DIRECTIONS } from '../../utils/dungeon';
 
-const wallPoints = (x, y, width, height, direction) => {
-  switch (direction) {
-    case 'top':
-      return [{ x, y }, { x: x + width, y }];
-    case 'right':
-      return [{ x: x + width, y }, { x: x + width, y: y + height }];
-    case 'bottom':
-      return [{ x, y: y + height }, { x: x + width, y: y + height }];
-    case 'left':
-      return [{ x, y }, { x, y: y + height }];
-    default:
-      throw new Error('ahhHHHhHHHh');
-  }
-};
-
-const doorPoints = (x, y, width, height, direction) => {
-  const dw = width / 4;
-  const dy = height / 4;
-
-  switch (direction) {
-    case 'top':
-      return [{ x: x + dw, y }, { x: x + width - dw, y }];
-    case 'right':
-      return [
-        { x: x + width, y: y + dy },
-        { x: x + width, y: y + height - dy },
-      ];
-    case 'bottom':
-      return [
-        { x: x + dw, y: y + height },
-        { x: x + width - dw, y: y + height },
-      ];
-    case 'left':
-      return [{ x, y: y + dy }, { x, y: y + height - dy }];
-    default:
-      throw new Error('ahhHHHhHHHh');
-  }
-};
-
 class Tile extends Component {
+  state = {
+    fill: `rgb(${150 + Math.floor(Math.random() * 20)},${135 +
+      Math.floor(Math.random() * 20)},${100 + Math.floor(Math.random() * 20)})`,
+  };
+
   onClick = () => {
     this.props.addRooms({
       x: this.props.coords.x,
@@ -52,16 +21,8 @@ class Tile extends Component {
   };
 
   render() {
-    const {
-      x,
-      y,
-      width,
-      height,
-      floorColor,
-      walls,
-      doors,
-      roomId,
-    } = this.props;
+    const { x, y, width, height, walls, doors, roomId } = this.props;
+    const { fill } = this.state;
 
     const drawnWalls = [];
     const drawnDoors = [];
@@ -70,49 +31,31 @@ class Tile extends Component {
 
     DIRECTIONS.forEach(direction => {
       if (walls[direction]) {
-        const points = wallPoints(
-          topLeft.x,
-          topLeft.y,
-          width,
-          height,
-          direction,
-        );
-
         drawnWalls.push(
-          <Path
+          <Wall
             key={`${roomId}-wall-${direction}`}
-            data={[
-              `M ${points[0].x} ${points[0].y}`,
-              `L ${points[1].x} ${points[1].y}`,
-              'Z',
-            ].join(' ')}
-            fillEnabled={false}
-            stroke={'#444444'}
-            strokeWidth={2}
+            {...{
+              x: topLeft.x,
+              y: topLeft.y,
+              width,
+              height,
+              direction,
+            }}
           />,
         );
       }
 
       if (doors[direction]) {
-        const points = doorPoints(
-          topLeft.x,
-          topLeft.y,
-          width,
-          height,
-          direction,
-        );
-
         drawnDoors.push(
-          <Path
+          <Door
             key={`${roomId}-door-${direction}`}
-            data={[
-              `M ${points[0].x} ${points[0].y}`,
-              `L ${points[1].x} ${points[1].y}`,
-              'Z',
-            ].join(' ')}
-            fillEnabled={false}
-            stroke={'#efefef'}
-            strokeWidth={2}
+            {...{
+              x: topLeft.x,
+              y: topLeft.y,
+              width,
+              height,
+              direction,
+            }}
           />,
         );
       }
@@ -125,10 +68,10 @@ class Tile extends Component {
           y={topLeft.y}
           width={width}
           height={height}
-          fill={floorColor}
+          fill={fill}
           strokeEnabled
           strokeWidth={1}
-          stroke={floorColor}
+          stroke="#b09d79"
         />
 
         {drawnWalls}
@@ -143,7 +86,6 @@ Tile.propTypes = {
   y: number.isRequired,
   width: number.isRequired,
   height: number.isRequired,
-  floorColor: string,
   walls: objectOf(bool),
   doors: objectOf(bool),
   roomId: string.isRequired,
