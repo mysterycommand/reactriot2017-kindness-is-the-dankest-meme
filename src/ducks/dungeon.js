@@ -6,7 +6,6 @@ import {
   getTileId,
 } from '../utils/dungeon';
 
-const ADD_ROOMS = 'add_rooms';
 const FULL_SYNC = 'dungeon_full_sync';
 
 const initialState = {};
@@ -19,35 +18,42 @@ export default function reducer(state = initialState, action) {
       return action.payload.dungeon;
     }
 
-    case ADD_ROOMS: {
-      const { x, y, doors } = action;
-
-      let newState = { ...state };
-
-      DIRECTIONS.forEach(dir => {
-        const checking = tileInDirection(x, y, dir);
-
-        if (!doors[dir] || state.tiles[getTileId(checking)]) {
-          return;
-        }
-
-        newState = addRoom(state, checking);
-      });
-
-      return newState;
-    }
-
     default:
       return { ...state };
   }
 }
 
-export function addRooms({ x, y, doors }) {
-  return { type: ADD_ROOMS, x, y, doors };
-}
+// export function addRooms({ x, y, doors }) {
+//   return { type: ADD_ROOMS, x, y, doors };
+// }
 
 export function fullSync(payload) {
   return { type: FULL_SYNC, payload };
+}
+
+export function socketAddRooms({ x, y, doors }) {
+  return (dispatch, getState, ws) => {
+    const state = getState();
+    const newState = { ...state };
+
+    DIRECTIONS.forEach(dir => {
+      const checking = tileInDirection(x, y, dir);
+
+      if (!doors[dir] || newState.dungeon.tiles[getTileId(checking)]) {
+        return;
+      }
+
+      newState.dungeon = addRoom(newState.dungeon, checking);
+    });
+
+    ws.send(
+      JSON.stringify({
+        duck: 'dungeon',
+        action: 'fullSync',
+        payload: newState,
+      }),
+    );
+  };
 }
 
 export function socketGenerateNew() {
