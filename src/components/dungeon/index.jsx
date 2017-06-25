@@ -29,7 +29,7 @@ const Dungeon = ({ dungeon, width, height, zoomLevel, players, addRooms }) => {
     return shifted;
   };
 
-  const you = players.find(({ isYou }) => isYou) || { visitedRooms: [0] };
+  const you = players.find(({ isYou }) => isYou) || { visitedRooms: ['0'] };
   console.log('you', you);
   const rooms = you.visitedRooms.map(roomId => {
     const room = dungeon.rooms[roomId];
