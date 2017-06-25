@@ -17,8 +17,10 @@ import style from './style.scss';
 
 import { changeSocketZoom } from '../../ducks/viewport';
 import { socketAddRooms } from '../../ducks/dungeon';
+import { socketTryToMove } from '../../ducks/players';
 
 import distance from '../../utils/distance';
+import { DIRECTIONS, getTileId, tileInDirection } from '../../utils/dungeon';
 
 const { max, min } = Math;
 
@@ -40,6 +42,7 @@ class App extends Component {
 
     changeZoomLevel: func.isRequired,
     addRooms: func.isRequired,
+    tryToMove: func.isRequired,
 
     dungeon: shape({
       rooms: objectOf(
@@ -108,6 +111,37 @@ class App extends Component {
     });
   };
 
+  onTileClick = tile => {
+    const yous = this.props.players.filter(p => p.isYou);
+    if (yous.length === 0) {
+      return;
+    }
+
+    const you = yous[0];
+    const currentTileId = getTileId({ x: you.x, y: you.y });
+    const currentTile = this.props.dungeon.tiles[currentTileId];
+    const tryingMove = getTileId(tile);
+
+    const validMove =
+      DIRECTIONS.filter(dir => {
+        if (currentTile.walls[dir] && !currentTile.doors[dir]) {
+          return false;
+        }
+
+        const id = getTileId(tileInDirection(you.x, you.y, dir));
+        const dirTile = this.props.dungeon.tiles[id];
+
+        return dirTile && id === tryingMove;
+      }).length > 0;
+
+    if (!validMove) {
+      return;
+    }
+
+    this.props.tryToMove(tile);
+    this.props.addRooms(tile);
+  };
+
   render() {
     const { width, height, zoomLevel, dungeon } = this.props;
 
@@ -126,7 +160,7 @@ class App extends Component {
             height,
             zoomLevel,
             dungeon,
-            addRooms: this.props.addRooms,
+            addRooms: this.onTileClick,
             onScroll: this.onScroll,
             players: this.props.players,
           }}
@@ -144,6 +178,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   changeZoomLevel: inc => dispatch(changeSocketZoom(inc)),
   addRooms: tile => dispatch(socketAddRooms(tile)),
+  tryToMove: tile => dispatch(socketTryToMove(tile)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
