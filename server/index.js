@@ -3,6 +3,8 @@ const path = require('path');
 const express = require('express');
 const expressWs = require('express-ws');
 
+const getRandomFace = require('./get-random-face');
+
 const { NODE_ENV, PORT } = process.env;
 
 const port = PORT || (NODE_ENV === 'development' ? 3001 : 3000);
@@ -69,7 +71,7 @@ app.ws('/dungeon', (ws, req) => {
         joinedPlayer = {
           id: playerId,
           fill: '#cecece',
-          face: 'star',
+          face: getRandomFace(),
           x: tile.x,
           y: tile.y,
         };

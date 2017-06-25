@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 import { Group, Star } from 'react-konva';
-import { number, oneOf, string, bool } from 'prop-types';
+import { number, string, bool } from 'prop-types';
 
-import Coin from 'components/coin';
-import Crown from 'components/crown';
+import Coin from './coin';
+import Crown from './faces/crown';
+import TextFace from './faces/text-face';
 
 class Token extends Component {
   static propTypes = {
     x: number,
     y: number,
     radius: number,
-    face: oneOf(['crown', 'star']),
+    face: string,
     fill: string,
     highlight: bool,
   };
@@ -26,6 +27,7 @@ class Token extends Component {
 
   getFace() {
     const { x, y, radius, face } = this.props;
+    const fill = 'rgba(0,0,0,0.15)';
 
     switch (face) {
       case 'star':
@@ -37,12 +39,11 @@ class Token extends Component {
               numPoints: 5,
               innerRadius: radius * 1 / 3,
               outerRadius: radius * 3 / 5,
-              fill: 'rgba(0,0,0,0.15)',
+              fill,
             }}
           />
         );
       case 'crown':
-      default:
         return (
           <Crown
             {...{
@@ -50,7 +51,19 @@ class Token extends Component {
               y,
               width: radius,
               height: radius * 2 / 3,
-              fill: 'rgba(0,0,0,0.15)',
+              fill,
+            }}
+          />
+        );
+      default:
+        return (
+          <TextFace
+            {...{
+              x,
+              y,
+              fontSize: radius * 3 / 2,
+              text: face,
+              fill,
             }}
           />
         );
