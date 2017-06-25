@@ -45,6 +45,18 @@ const assignCurrentPlayer = (client, players) => {
   players.forEach(player => (player.isYou = player.id === client.id));
 };
 
+const deDupePlayers = players => {
+  const deduped = [];
+  const ids = {};
+  players.forEach(player => {
+    if (!ids[player.id]) {
+      ids[player.id] = true;
+      deduped.push(player);
+    }
+  });
+  return deduped;
+};
+
 const handleWsError = e => {
   if (e) {
     // these are often fine - i.e. trying to send to a closed connection.
@@ -58,29 +70,18 @@ const handleWsError = e => {
 app.ws('/dungeon', (ws, req) => {
   ws.on('message', message => {
     const json = JSON.parse(message);
-
     if (json.isJoin) {
-      const playerId = json.id || uuid();
-      ws.id = playerId;
+      let joinedPlayer = json.player;
 
       const players = lastKnownState ? lastKnownState.players || [] : [];
-      let joinedPlayer = null;
 
-      if (players.length > 0) {
-        const player = lastKnownState.players.filter(player => {
-          return player.id === playerId;
-        });
-
-        if (player.length) {
-          joinedPlayer = player[0];
-        }
-      }
-
-      if (!joinedPlayer) {
+      if (joinedPlayer && joinedPlayer.id) {
+        players.push(joinedPlayer);
+      } else {
         const tile = getTileInCenterRoom();
 
         joinedPlayer = {
-          id: playerId,
+          id: uuid(),
           fill: randomRgb(),
           face: getRandomFace(),
           x: tile.x,
@@ -90,20 +91,23 @@ app.ws('/dungeon', (ws, req) => {
         players.push(joinedPlayer);
       }
 
+      ws.id = joinedPlayer.id;
+
       const message = {
         duck: 'fullSync',
         action: 'fullSync',
         payload: Object.assign(lastKnownState || {}, {
-          players,
+          players: deDupePlayers(players),
         }),
       };
+
+      lastKnownState = message.payload;
 
       wss.clients.forEach(client => {
         assignCurrentPlayer(client, message.payload.players);
         client.send(JSON.stringify(message), handleWsError);
       });
 
-      lastKnownState = message.payload;
       return;
     }
 
@@ -144,6 +148,8 @@ app.ws('/dungeon', (ws, req) => {
       lastKnownState = message.payload;
       return;
     }
+
+    json.payload.players = deDupePlayers(json.payload.players);
 
     wss.clients.forEach(client => {
       assignCurrentPlayer(client, json.payload.players);
