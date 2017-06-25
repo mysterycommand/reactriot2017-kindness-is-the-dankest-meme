@@ -1,7 +1,9 @@
 import { combineReducers } from 'redux';
 
-import viewport from './viewport';
+import viewport, * as viewportActions from './viewport';
 
 export default combineReducers({
   viewport,
 });
+
+export { viewportActions as viewport };
