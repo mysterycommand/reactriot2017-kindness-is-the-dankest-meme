@@ -1,43 +1,71 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { number, func } from 'prop-types';
+import {
+  number,
+  func,
+  shape,
+  bool,
+  string,
+  arrayOf,
+  objectOf,
+} from 'prop-types';
 
 import Viewport from 'components/viewport';
 
 import style from './style.scss';
 
-import { generateDungeon } from '../../utils/dungeon';
 import { changeSocketZoom } from '../../ducks/viewport';
+import { addRooms } from '../../ducks/dungeon';
 
 import randomRgb from '../../utils/random-rgb';
+
+const tileShape = shape({
+  x: number,
+  y: number,
+  walls: objectOf(bool),
+  doors: objectOf(bool),
+});
 
 class App extends Component {
   static propTypes = {
     width: number.isRequired,
     height: number.isRequired,
     zoomLevel: number.isRequired,
+
     changeZoomLevel: func.isRequired,
+    addRooms: func.isRequired,
+
+    dungeon: shape({
+      rooms: objectOf(
+        shape({
+          id: string,
+          doorTiles: arrayOf(tileShape),
+        }),
+      ),
+      tileToRoom: objectOf(string),
+    }).isRequired,
   };
 
-  state = { dungeon: generateDungeon(7), players: [] };
+  state = { players: [] };
 
   componentDidMount() {
     window.app = this;
 
-    this.state.players = this.getPlayers(this.state.dungeon);
+    this.state.players = this.getPlayers(this.props.dungeon);
   }
 
   onScroll = e => {
     e.stopPropagation();
     e.preventDefault();
-    this.props.changeZoomLevel(e.deltaY / 150);
+
+    const max = 2;
+
+    this.props.changeZoomLevel(
+      Math.max(Math.min(e.deltaY / 150, max), -1 * max),
+    );
   };
 
   getPlayers = dungeon => {
-    const tiles = Object.keys(dungeon.rooms)
-      .map(id => dungeon.rooms[id].tiles)
-      .reduce((acc, val) => acc.concat(val), []);
-
     const players = [
       {
         id: '1',
@@ -52,7 +80,10 @@ class App extends Component {
     ];
 
     players.forEach(player => {
-      const tile = tiles[Math.floor(Math.random() * tiles.length)];
+      const tileIds = Object.keys(dungeon.tiles);
+      const tile =
+        dungeon.tiles[tileIds[Math.floor(Math.random() * tileIds.length)]];
+
       Object.assign(player, {
         x: tile.x,
         y: tile.y,
@@ -63,17 +94,15 @@ class App extends Component {
   };
 
   makeNew = () => {
-    const dungeon = generateDungeon(7);
-    const players = this.getPlayers(dungeon);
+    const players = this.getPlayers(this.props.dungeon);
 
     this.setState({
-      dungeon,
       players,
     });
   };
 
   render() {
-    const { width, height, zoomLevel } = this.props;
+    const { width, height, zoomLevel, dungeon } = this.props;
 
     return (
       <div className={style.app} onWheel={this.onScroll}>
@@ -82,23 +111,26 @@ class App extends Component {
             width,
             height,
             zoomLevel,
+            dungeon,
+            addRooms: this.props.addRooms,
             onScroll: this.onScroll,
-            dungeon: this.state.dungeon,
             players: this.state.players,
           }}
         />
 
-        <div className={style.menu}>
-          <button onClick={this.makeNew}>new map</button>
-        </div>
+        <div className={style.menu} />
       </div>
     );
   }
 }
-const mapStateToProps = state => state.viewport;
+const mapStateToProps = state => ({
+  ...state.viewport,
+  dungeon: state.dungeon,
+});
 
 const mapDispatchToProps = dispatch => ({
   changeZoomLevel: inc => dispatch(changeSocketZoom(inc)),
+  addRooms: tile => dispatch(addRooms(tile)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
