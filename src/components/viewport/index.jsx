@@ -18,12 +18,14 @@ const Viewport = ({ width, height, dungeon, zoomLevel, players, addRooms }) =>
   <Stage className={style.viewport} width={width} height={height}>
     <Layer draggable>
       <Dungeon
-        width={width}
-        height={height}
-        dungeon={dungeon}
-        zoomLevel={zoomLevel}
-        players={players}
-        addRooms={addRooms}
+        {...{
+          width,
+          height,
+          dungeon,
+          zoomLevel,
+          players,
+          addRooms,
+        }}
       />
     </Layer>
   </Stage>;
