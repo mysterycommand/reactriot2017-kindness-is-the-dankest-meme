@@ -38,6 +38,7 @@ const Dungeon = ({ dungeon, width, height, zoomLevel, players }) => {
 
   const drawnPlayers = players.map(player =>
     <Token
+      key={player.id}
       x={transformPoint(player).x}
       y={transformPoint(player).y}
       radius={tileSize / 3}
