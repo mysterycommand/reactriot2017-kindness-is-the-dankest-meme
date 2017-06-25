@@ -108,6 +108,10 @@ class App extends Component {
     });
   };
 
+  onTileClick = tile => {
+    this.props.addRooms(tile);
+  };
+
   render() {
     const { width, height, zoomLevel, dungeon } = this.props;
 
@@ -126,7 +130,7 @@ class App extends Component {
             height,
             zoomLevel,
             dungeon,
-            addRooms: this.props.addRooms,
+            addRooms: this.onTileClick,
             onScroll: this.onScroll,
             players: this.props.players,
           }}
