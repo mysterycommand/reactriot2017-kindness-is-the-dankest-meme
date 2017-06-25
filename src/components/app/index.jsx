@@ -14,7 +14,7 @@ import Viewport from 'components/viewport';
 
 import style from './style.scss';
 
-import { changeZoomLevel } from '../../ducks/viewport';
+import { changeSocketZoom } from '../../ducks/viewport';
 import { addRooms } from '../../ducks/dungeon';
 
 import randomRgb from '../../utils/random-rgb';
@@ -55,6 +55,9 @@ class App extends Component {
   }
 
   onScroll = e => {
+    e.stopPropagation();
+    e.preventDefault();
+
     const max = 2;
 
     this.props.changeZoomLevel(
@@ -126,7 +129,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  changeZoomLevel: inc => dispatch(changeZoomLevel(inc)),
+  changeZoomLevel: inc => dispatch(changeSocketZoom(inc)),
   addRooms: tile => dispatch(addRooms(tile)),
 });
 

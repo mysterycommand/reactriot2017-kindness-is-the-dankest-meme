@@ -27,9 +27,7 @@ app.ws('/dungeon', (ws, req) => {
   ws.on('message', message => {
     const { size: s } = wss.clients;
     wss.clients.forEach(client => {
-      client.send(
-        `someone sent '${message}' to ${s} ${s === 1 ? 'person' : 'people'}`,
-      );
+      client.send(message);
     });
   });
 });

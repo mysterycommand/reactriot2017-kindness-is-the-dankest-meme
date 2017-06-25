@@ -1,16 +1,25 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 
 import App from 'components/app';
 import registerServiceWorker from './registerServiceWorker';
 import reducers from './ducks';
-import { resize } from './ducks/viewport';
+
+import createWindowDispatcher from './dispatchers/window';
+import createSocketDispatcher from './dispatchers/socket';
+import ws from './socket';
 
 import './style.scss';
 
-const store = createStore(reducers);
+const store = createStore(
+  reducers,
+  applyMiddleware(thunk.withExtraArgument(ws)),
+);
+createWindowDispatcher(window, store);
+createSocketDispatcher(ws, store);
 
 ReactDOM.render(
   <Provider store={store}>
@@ -18,26 +27,5 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('root'),
 );
-
-function onResize({ target }) {
-  const { innerWidth: width, innerHeight: height } = target;
-  store.dispatch(resize(width, height));
-}
-window.addEventListener('resize', onResize);
-onResize({ target: window });
-
-const { NODE_ENV, PORT } = process.env;
-const { hostname: h, protocol: p } = location;
-
-const port = NODE_ENV !== 'production'
-  ? `:${PORT || (NODE_ENV === 'development' ? 3001 : 3000)}`
-  : '';
-const s = p === 'https:' ? 's' : '';
-
-const ws = new WebSocket(`ws${s}://${h}${port}/dungeon`);
-ws.addEventListener('message', ({ data }) => console.log(data));
-ws.addEventListener('open', () => {
-  ws.send('test');
-});
 
 registerServiceWorker();

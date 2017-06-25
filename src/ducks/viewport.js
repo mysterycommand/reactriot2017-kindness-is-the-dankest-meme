@@ -1,11 +1,13 @@
 const RESIZE = 'resize';
-const CHANGE_ZOOM = 'change_zoom';
+const CHANGE_CLIENT_ZOOM = 'change_zoom';
 
 const initialState = {
   width: 480,
   height: 270,
   zoomLevel: 1,
 };
+
+const { min, max } = Math;
 
 export default function reducer(state = initialState, action) {
   const { type } = action;
@@ -16,12 +18,8 @@ export default function reducer(state = initialState, action) {
       return { ...state, width, height };
     }
 
-    case CHANGE_ZOOM: {
-      const zoomLevel = Math.min(
-        Math.max(state.zoomLevel + action.increment, 0.01),
-        25,
-      );
-
+    case CHANGE_CLIENT_ZOOM: {
+      const { viewport: { zoomLevel } } = action;
       return { ...state, zoomLevel };
     }
 
@@ -34,6 +32,27 @@ export function resize(width, height) {
   return { type: RESIZE, width, height };
 }
 
-export function changeZoomLevel(increment) {
-  return { type: CHANGE_ZOOM, increment };
+export function changeClientZoom(payload) {
+  return { type: CHANGE_CLIENT_ZOOM, ...payload };
+}
+
+export function changeSocketZoom(increment) {
+  return (dispatch, getState, ws) => {
+    const state = getState();
+    const { viewport: { zoomLevel } } = state;
+    const newState = {
+      ...state,
+      viewport: {
+        zoomLevel: min(max(zoomLevel + increment, 0.01), 25),
+      },
+    };
+
+    ws.send(
+      JSON.stringify({
+        duck: 'viewport',
+        action: 'changeClientZoom',
+        payload: newState,
+      }),
+    );
+  };
 }
