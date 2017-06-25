@@ -1,5 +1,8 @@
+import throttle from '../utils/throttle';
+
 const RESIZE = 'resize';
-const CHANGE_CLIENT_ZOOM = 'change_zoom';
+const CHANGE_SOCKET_ZOOM = 'change_socket_zoom';
+const CHANGE_CLIENT_ZOOM = 'change_client_zoom';
 const FULL_SYNC = 'viewport_full_sync';
 
 const initialState = {
@@ -57,12 +60,14 @@ export function changeSocketZoom(increment) {
       },
     };
 
-    ws.send(
-      JSON.stringify({
-        duck: 'viewport',
-        action: 'changeClientZoom',
-        payload: newState,
-      }),
-    );
+    throttle(CHANGE_SOCKET_ZOOM, () => {
+      ws.send(
+        JSON.stringify({
+          duck: 'viewport',
+          action: 'changeClientZoom',
+          payload: newState,
+        }),
+      );
+    });
   };
 }

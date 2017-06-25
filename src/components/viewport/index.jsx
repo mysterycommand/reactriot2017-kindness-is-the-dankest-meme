@@ -17,12 +17,14 @@ import style from './style.scss';
 const Viewport = ({ width, height, dungeon, zoomLevel, players, addRooms }) => {
   const dung = dungeon && dungeon.rooms
     ? <Dungeon
-        width={width}
-        height={height}
-        dungeon={dungeon}
-        zoomLevel={zoomLevel}
-        players={players}
-        addRooms={addRooms}
+        {...{
+          width,
+          height,
+          dungeon,
+          zoomLevel,
+          players,
+          addRooms,
+        }}
       />
     : null;
 
