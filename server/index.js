@@ -67,6 +67,8 @@ const handleWsError = e => {
   }
 };
 
+const instanceId = uuid();
+
 app.ws('/dungeon', (ws, req) => {
   ws.on('message', message => {
     const json = JSON.parse(message);
@@ -75,7 +77,11 @@ app.ws('/dungeon', (ws, req) => {
 
       const players = lastKnownState ? lastKnownState.players || [] : [];
 
-      if (joinedPlayer && joinedPlayer.id) {
+      if (
+        joinedPlayer &&
+        joinedPlayer.id &&
+        joinedPlayer.instanceId === instanceId
+      ) {
         players.push(joinedPlayer);
       } else {
         const tile = getTileInCenterRoom();
@@ -86,6 +92,7 @@ app.ws('/dungeon', (ws, req) => {
           face: getRandomFace(),
           x: tile.x,
           y: tile.y,
+          instanceId: instanceId,
         };
 
         players.push(joinedPlayer);
