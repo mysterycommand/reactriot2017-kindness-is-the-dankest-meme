@@ -34,20 +34,36 @@ const assignCurrentPlayer = (client, players) => {
 
 app.ws('/dungeon', (ws, req) => {
   ws.on('message', message => {
-    if (message === 'join') {
-      const newPlayerId = uuid();
-      ws.id = newPlayerId;
+    const json = JSON.parse(message);
 
-      const newPlayer = {
-        id: newPlayerId,
-        fill: '#cecece',
-        face: 'star',
-        x: Math.floor(Math.random() * 10) - 5,
-        y: Math.floor(Math.random() * 10) - 5,
-      };
+    if (json.isJoin) {
+      const playerId = json.id || uuid();
+      ws.id = playerId;
 
       const players = lastKnownState ? lastKnownState.players || [] : [];
-      players.push(newPlayer);
+      let joinedPlayer = null;
+
+      if (players.length > 0) {
+        const player = lastKnownState.players.filter(player => {
+          return player.id === playerId;
+        });
+
+        if (player.length) {
+          joinedPlayer = player[0];
+        }
+      }
+
+      if (!joinedPlayer) {
+        joinedPlayer = {
+          id: playerId,
+          fill: '#cecece',
+          face: 'star',
+          x: Math.floor(Math.random() * 10) - 5,
+          y: Math.floor(Math.random() * 10) - 5,
+        };
+
+        players.push(joinedPlayer);
+      }
 
       const message = {
         duck: 'fullSync',
@@ -63,8 +79,6 @@ app.ws('/dungeon', (ws, req) => {
       });
       return;
     }
-
-    const json = JSON.parse(message);
 
     wss.clients.forEach(client => {
       assignCurrentPlayer(client, json.payload.players);
