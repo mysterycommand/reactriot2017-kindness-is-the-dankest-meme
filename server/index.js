@@ -45,40 +45,99 @@ const assignCurrentPlayer = (client, players) => {
   players.forEach(player => (player.isYou = player.id === client.id));
 };
 
+const deDupePlayers = players => {
+  const deduped = [];
+  const ids = {};
+  players.forEach(player => {
+    if (!ids[player.id]) {
+      ids[player.id] = true;
+      deduped.push(player);
+    }
+  });
+  return deduped;
+};
+
+const handleWsError = e => {
+  if (e) {
+    // these are often fine - i.e. trying to send to a closed connection.
+    // just need to catch them somehow, and might as well log.
+    // (note: this always happens on "leave", because its sent as a connection
+    // is closing.)
+    console.log('socket error: ' + e);
+  }
+};
+
+const instanceId = uuid();
+
 app.ws('/dungeon', (ws, req) => {
   ws.on('message', message => {
     const json = JSON.parse(message);
-
     if (json.isJoin) {
-      const playerId = json.id || uuid();
-      ws.id = playerId;
+      let joinedPlayer = json.player;
 
       const players = lastKnownState ? lastKnownState.players || [] : [];
-      let joinedPlayer = null;
 
-      if (players.length > 0) {
-        const player = lastKnownState.players.filter(player => {
-          return player.id === playerId;
-        });
-
-        if (player.length) {
-          joinedPlayer = player[0];
-        }
-      }
-
-      if (!joinedPlayer) {
+      if (
+        joinedPlayer &&
+        joinedPlayer.id &&
+        joinedPlayer.instanceId === instanceId
+      ) {
+        players.push(joinedPlayer);
+      } else {
         const tile = getTileInCenterRoom();
 
         joinedPlayer = {
-          id: playerId,
+          id: uuid(),
           fill: randomRgb(),
           face: getRandomFace(),
           x: tile.x,
           y: tile.y,
+          instanceId: instanceId,
         };
 
         players.push(joinedPlayer);
       }
+
+      ws.id = joinedPlayer.id;
+
+      const message = {
+        duck: 'fullSync',
+        action: 'fullSync',
+        payload: Object.assign(lastKnownState || {}, {
+          players: deDupePlayers(players),
+        }),
+      };
+
+      lastKnownState = message.payload;
+
+      wss.clients.forEach(client => {
+        assignCurrentPlayer(client, message.payload.players);
+        client.send(JSON.stringify(message), handleWsError);
+      });
+
+      return;
+    }
+
+    if (
+      json.isLeave &&
+      json.id &&
+      lastKnownState &&
+      lastKnownState.players.length > 0
+    ) {
+      const clientsForId = [];
+      wss.clients.forEach(c => {
+        if (c.id === json.id) {
+          clientsForId.push(c);
+        }
+      });
+
+      if (clientsForId.length > 1) {
+        return;
+      }
+
+      const players = lastKnownState.players.filter(player => {
+        return player.id !== json.id;
+      });
 
       const message = {
         duck: 'fullSync',
@@ -90,14 +149,18 @@ app.ws('/dungeon', (ws, req) => {
 
       wss.clients.forEach(client => {
         assignCurrentPlayer(client, message.payload.players);
-        client.send(JSON.stringify(message));
+        client.send(JSON.stringify(message), handleWsError);
       });
+
+      lastKnownState = message.payload;
       return;
     }
 
+    json.payload.players = deDupePlayers(json.payload.players);
+
     wss.clients.forEach(client => {
       assignCurrentPlayer(client, json.payload.players);
-      client.send(JSON.stringify(json));
+      client.send(JSON.stringify(json), handleWsError);
     });
 
     lastKnownState = json.payload;
