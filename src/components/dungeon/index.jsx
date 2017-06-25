@@ -5,7 +5,7 @@ import { shape, objectOf, arrayOf, number, string, bool } from 'prop-types';
 import Room from 'components/room';
 import Token from 'components/token';
 
-const BASE_TILE_SIZE = 40;
+const BASE_TILE_SIZE = 15;
 
 const Dungeon = ({ dungeon, width, height, zoomLevel, players }) => {
   const tileSize = BASE_TILE_SIZE * zoomLevel;
@@ -38,6 +38,7 @@ const Dungeon = ({ dungeon, width, height, zoomLevel, players }) => {
 
   const drawnPlayers = players.map(player =>
     <Token
+      key={player.id}
       x={transformPoint(player).x}
       y={transformPoint(player).y}
       radius={tileSize / 3}

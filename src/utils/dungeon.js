@@ -1,8 +1,8 @@
 import randomRgb from './random-rgb';
 
-const MIN_TILES_PER_ROOM = 4;
-const MAX_TILES_PER_ROOM = 12;
-const DOORS_PER_ROOM = 3;
+const MIN_TILES_PER_ROOM = 24;
+const MAX_TILES_PER_ROOM = 58;
+const DOORS_PER_ROOM = 4;
 
 function hasWall(tile) {
   return (
@@ -140,9 +140,20 @@ export function addRoom(dungeon) {
     Math.floor(Math.random() * (MAX_TILES_PER_ROOM - MIN_TILES_PER_ROOM)) +
     MIN_TILES_PER_ROOM;
 
+  console.log('tilecount', tileCount);
+
   while (tiles.length < tileCount) {
     // pick a random tile that's on the wall
-    const possibleTiles = tiles.filter(hasWall);
+    const possibleTiles = tiles.filter(
+      tile =>
+        ['top', 'right', 'bottom', 'left'].filter(dir => {
+          const checking = tileInDirection(tile.x, tile.y, dir);
+          const key = `${checking.x},${checking.y}`;
+          return (
+            tile.walls[dir] && !dungeon.tileToRoom[key] && !tilesInRoom[key]
+          );
+        }).length > 0,
+    );
 
     if (possibleTiles.length === 0) {
       console.warn('what happened here');
@@ -199,6 +210,11 @@ export function addRoom(dungeon) {
 
   for (let i = 0; i < doorsNeeded; i += 1) {
     const possibleTiles = tiles.filter(hasWall).filter(canHaveDoor);
+
+    if (possibleTiles.length === 0) {
+      break;
+    }
+
     const tile = arrayRand(possibleTiles);
 
     const availableDirs = ['left', 'top', 'right', 'bottom'].filter(
@@ -211,6 +227,8 @@ export function addRoom(dungeon) {
   }
 
   room.tiles = tiles;
+
+  console.log('made room with tiles', room.tiles.length);
 
   return room;
 }
