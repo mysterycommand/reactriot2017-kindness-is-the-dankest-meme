@@ -3,7 +3,7 @@ import { Group, Path } from 'react-konva';
 import { number, oneOf } from 'prop-types';
 
 export function getPoints({ x, y, width, height, direction }) {
-  const t = 3;
+  const t = 5;
   const u = 1;
 
   switch (direction) {
