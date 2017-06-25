@@ -8,7 +8,6 @@ import App from 'components/app';
 import registerServiceWorker from './registerServiceWorker';
 import reducers from './ducks';
 
-import createWindowDispatcher from './dispatchers/window';
 import createSocketDispatcher from './dispatchers/socket';
 import ws from './socket';
 
@@ -18,7 +17,7 @@ const store = createStore(
   reducers,
   applyMiddleware(thunk.withExtraArgument(ws)),
 );
-createWindowDispatcher(window, store);
+
 createSocketDispatcher(ws, store);
 
 ReactDOM.render(
