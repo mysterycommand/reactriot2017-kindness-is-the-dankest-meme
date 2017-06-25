@@ -71,9 +71,9 @@ class Token extends Component {
   }
 
   getHighlight() {
-    const { x, y, radius, highlight } = this.props;
+    const { x, y, radius: r, highlight } = this.props;
     return highlight
-      ? <Coin {...{ x, y, radius, fill: 'rgba(0,0,0,0.5)' }} />
+      ? <Coin {...{ x, y, radius: r + 3, fill: 'rgba(0,0,0,0.5)' }} />
       : null;
   }
 
