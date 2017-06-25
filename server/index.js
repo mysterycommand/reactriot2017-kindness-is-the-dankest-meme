@@ -23,12 +23,29 @@ if (NODE_ENV === 'development') {
 app.use(express.static(path.join(__dirname, '../build')));
 
 const wss = getWss('/dungeon');
+
+let lastKnownState = null;
+
 app.ws('/dungeon', (ws, req) => {
   ws.on('message', message => {
+    if (message === 'fullSync') {
+      ws.send(
+        JSON.stringify({
+          duck: 'fullSync',
+          action: 'fullSync',
+          payload: lastKnownState,
+        }),
+      );
+      return;
+    }
+
     const { size: s } = wss.clients;
     wss.clients.forEach(client => {
       client.send(message);
     });
+
+    const json = JSON.parse(message);
+    lastKnownState = json.payload;
   });
 });
 

@@ -17,7 +17,7 @@ import style from './style.scss';
 import { changeSocketZoom } from '../../ducks/viewport';
 import { addRooms } from '../../ducks/dungeon';
 
-import randomRgb from '../../utils/random-rgb';
+// import randomRgb from '../../utils/random-rgb';
 
 const tileShape = shape({
   x: number,
@@ -65,31 +65,29 @@ class App extends Component {
     );
   };
 
-  getPlayers = dungeon => {
-    const players = [
-      {
-        id: '1',
-        fill: randomRgb(),
-        face: 'crown',
-      },
-      {
-        id: '2',
-        fill: randomRgb(),
-        face: 'star',
-      },
-    ];
-
-    players.forEach(player => {
-      const tileIds = Object.keys(dungeon.tiles);
-      const tile =
-        dungeon.tiles[tileIds[Math.floor(Math.random() * tileIds.length)]];
-
-      Object.assign(player, {
-        x: tile.x,
-        y: tile.y,
-      });
-    });
-
+  getPlayers = () => {
+    // const players = [
+    //   {
+    //     id: '1',
+    //     fill: randomRgb(),
+    //     face: 'crown',
+    //   },
+    //   {
+    //     id: '2',
+    //     fill: randomRgb(),
+    //     face: 'star',
+    //   },
+    // ];
+    // players.forEach(player => {
+    //   const tileIds = Object.keys(dungeon.tiles);
+    //   const tile =
+    //     dungeon.tiles[tileIds[Math.floor(Math.random() * tileIds.length)]];
+    //   Object.assign(player, {
+    //     x: tile.x,
+    //     y: tile.y,
+    //   });
+    // });
+    const players = [];
     return players;
   };
 

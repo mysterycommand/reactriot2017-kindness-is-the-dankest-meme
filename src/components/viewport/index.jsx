@@ -14,10 +14,9 @@ import Dungeon from 'components/dungeon';
 
 import style from './style.scss';
 
-const Viewport = ({ width, height, dungeon, zoomLevel, players, addRooms }) =>
-  <Stage className={style.viewport} width={width} height={height}>
-    <Layer draggable>
-      <Dungeon
+const Viewport = ({ width, height, dungeon, zoomLevel, players, addRooms }) => {
+  const dung = dungeon && dungeon.rooms
+    ? <Dungeon
         width={width}
         height={height}
         dungeon={dungeon}
@@ -25,8 +24,16 @@ const Viewport = ({ width, height, dungeon, zoomLevel, players, addRooms }) =>
         players={players}
         addRooms={addRooms}
       />
-    </Layer>
-  </Stage>;
+    : null;
+
+  return (
+    <Stage className={style.viewport} width={width} height={height}>
+      <Layer draggable>
+        {dung}
+      </Layer>
+    </Stage>
+  );
+};
 
 const tileShape = shape({
   x: number,

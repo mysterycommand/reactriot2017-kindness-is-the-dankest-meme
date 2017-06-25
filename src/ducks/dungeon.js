@@ -7,13 +7,18 @@ import {
 } from '../utils/dungeon';
 
 const ADD_ROOMS = 'add_rooms';
+const FULL_SYNC = 'dungeon_full_sync';
 
-const initialState = generateDungeon(1);
+const initialState = {};
 
 export default function reducer(state = initialState, action) {
   const { type } = action;
 
   switch (type) {
+    case FULL_SYNC: {
+      return action.payload.dungeon;
+    }
+
     case ADD_ROOMS: {
       const { x, y, doors } = action;
 
@@ -39,4 +44,27 @@ export default function reducer(state = initialState, action) {
 
 export function addRooms({ x, y, doors }) {
   return { type: ADD_ROOMS, x, y, doors };
+}
+
+export function fullSync(payload) {
+  return { type: FULL_SYNC, payload };
+}
+
+export function socketGenerateNew() {
+  return (dispatch, getState, ws) => {
+    const state = getState();
+
+    const newState = {
+      ...state,
+      dungeon: generateDungeon(1),
+    };
+
+    ws.send(
+      JSON.stringify({
+        duck: 'dungeon',
+        action: 'fullSync',
+        payload: newState,
+      }),
+    );
+  };
 }

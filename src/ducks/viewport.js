@@ -1,5 +1,6 @@
 const RESIZE = 'resize';
 const CHANGE_CLIENT_ZOOM = 'change_zoom';
+const FULL_SYNC = 'viewport_full_sync';
 
 const initialState = {
   width: 480,
@@ -13,6 +14,10 @@ export default function reducer(state = initialState, action) {
   const { type } = action;
 
   switch (type) {
+    case FULL_SYNC: {
+      return action.payload.viewport;
+    }
+
     case RESIZE: {
       const { width, height } = action;
       return { ...state, width, height };
@@ -26,6 +31,10 @@ export default function reducer(state = initialState, action) {
     default:
       return { ...state };
   }
+}
+
+export function fullSync(payload) {
+  return { type: FULL_SYNC, payload };
 }
 
 export function resize(width, height) {
@@ -43,6 +52,7 @@ export function changeSocketZoom(increment) {
     const newState = {
       ...state,
       viewport: {
+        ...state.viewport,
         zoomLevel: min(max(zoomLevel + increment, 0.01), 25),
       },
     };
