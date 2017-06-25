@@ -18,7 +18,7 @@ export default function reducer(state = initialState, action) {
 
   switch (type) {
     case FULL_SYNC: {
-      return action.viewport;
+      return action.viewport || state;
     }
 
     case RESIZE: {

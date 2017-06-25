@@ -9,7 +9,7 @@ export default function createWindowDispatcher(socket, store) {
 
   // these might come in handy for some kind of JOIN_DUNGEON action?
   function onOpen() {
-    socket.send('fullSync');
+    socket.send('join');
   }
   socket.addEventListener('open', onOpen);
 }
