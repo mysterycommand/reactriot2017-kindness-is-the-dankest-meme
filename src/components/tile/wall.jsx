@@ -2,9 +2,9 @@ import React from 'react';
 import { Group, Path } from 'react-konva';
 import { number, oneOf } from 'prop-types';
 
-export function getPoints({ x, y, width, height, direction }) {
-  const t = 5;
-  const u = 1;
+export function getPoints({ x, y, width, height, direction, zoomLevel }) {
+  const t = 5 * zoomLevel;
+  const u = 1 * zoomLevel;
 
   switch (direction) {
     case 'top':
@@ -89,6 +89,7 @@ Wall.propTypes = {
   y: number.isRequired,
   width: number.isRequired,
   height: number.isRequired,
+  zoomLevel: number.isRequired,
   direction: oneOf(['top', 'right', 'bottom', 'left']).isRequired,
 };
 

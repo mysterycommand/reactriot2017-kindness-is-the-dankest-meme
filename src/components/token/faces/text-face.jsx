@@ -16,8 +16,8 @@ class TextFace extends Component {
   };
 
   state = {
-    width: 0,
-    height: 0,
+    width: null,
+    height: null,
   };
 
   componentWillReceiveProps() {
@@ -31,7 +31,20 @@ class TextFace extends Component {
 
   render() {
     const { x, y, fontSize, text, fill } = this.props;
-    const { width, height } = this.state;
+
+    let { width, height } = this.state;
+
+    if (width === null) {
+      const ctx = document.createElement('canvas').getContext('2d');
+      ctx.font = `${fontSize}px Arial`;
+      const size = ctx.measureText(text);
+
+      width = size.width;
+    }
+
+    if (height === null) {
+      height = fontSize;
+    }
 
     return (
       <Group {...{ x, y }}>
