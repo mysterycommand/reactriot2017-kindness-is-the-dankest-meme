@@ -197,7 +197,13 @@ export function addRoom(originalDungeon, starting) {
     tileId => tileDoors(roomTiles[tileId]).length > 0,
   ).length;
 
-  while (doorCount < DOORS_PER_ROOM) {
+  let doorsNeeded = DOORS_PER_ROOM;
+
+  if (doorCount >= doorsNeeded) {
+    doorsNeeded += 1; // so we never get stuck
+  }
+
+  while (doorCount < doorsNeeded) {
     const availableTilesAndDirections = room.tileIds
       .map(tileId => {
         const tile = roomTiles[tileId];
