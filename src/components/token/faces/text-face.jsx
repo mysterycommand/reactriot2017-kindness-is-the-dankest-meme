@@ -21,9 +21,6 @@ class TextFace extends Component {
   };
 
   componentWillReceiveProps() {
-    const { width, height } = this.state;
-    if (width !== 0 && height !== 0) return;
-
     const { k } = this;
 
     this.setState({
