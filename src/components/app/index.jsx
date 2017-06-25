@@ -7,7 +7,7 @@ import Viewport from 'components/viewport';
 import style from './style.scss';
 
 import { generateDungeon } from '../../utils/dungeon';
-import { changeZoomLevel } from '../../ducks/viewport';
+import { changeSocketZoom } from '../../ducks/viewport';
 
 import randomRgb from '../../utils/random-rgb';
 
@@ -98,7 +98,7 @@ class App extends Component {
 const mapStateToProps = state => state.viewport;
 
 const mapDispatchToProps = dispatch => ({
-  changeZoomLevel: inc => dispatch(changeZoomLevel(inc)),
+  changeZoomLevel: inc => dispatch(changeSocketZoom(inc)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
