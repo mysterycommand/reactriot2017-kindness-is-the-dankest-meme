@@ -6,6 +6,8 @@ import {
   getTileId,
 } from '../utils/dungeon';
 
+import { fullSync as playerFullSync } from './players';
+
 const FULL_SYNC = 'dungeon_full_sync';
 
 const initialState = {};
@@ -40,6 +42,10 @@ export function socketAddRooms({ x, y, doors }) {
       }
 
       newState.dungeon = addRoom(newState.dungeon, checking);
+      newState.players.find(({ isYou }) => isYou).visitedRooms = Object.keys(
+        newState.dungeon.rooms,
+      );
+      dispatch(playerFullSync(newState.players));
     });
 
     ws.send(

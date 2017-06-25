@@ -93,6 +93,7 @@ app.ws('/dungeon', (ws, req) => {
           x: tile.x,
           y: tile.y,
           instanceId: instanceId,
+          visitedRooms: [0],
         };
 
         players.push(joinedPlayer);
