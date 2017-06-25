@@ -1,46 +1,10 @@
 import React, { Component } from 'react';
-import { Rect, Group, Path } from 'react-konva';
+import { Rect, Group } from 'react-konva';
 import { objectOf, number, string, bool, func } from 'prop-types';
+
+import Wall from './wall';
+import Door from './door';
 import { DIRECTIONS } from '../../utils/dungeon';
-
-const wallPoints = (x, y, width, height, direction) => {
-  switch (direction) {
-    case 'top':
-      return [{ x, y }, { x: x + width, y }];
-    case 'right':
-      return [{ x: x + width, y }, { x: x + width, y: y + height }];
-    case 'bottom':
-      return [{ x, y: y + height }, { x: x + width, y: y + height }];
-    case 'left':
-      return [{ x, y }, { x, y: y + height }];
-    default:
-      throw new Error('ahhHHHhHHHh');
-  }
-};
-
-const doorPoints = (x, y, width, height, direction) => {
-  const dw = width / 4;
-  const dy = height / 4;
-
-  switch (direction) {
-    case 'top':
-      return [{ x: x + dw, y }, { x: x + width - dw, y }];
-    case 'right':
-      return [
-        { x: x + width, y: y + dy },
-        { x: x + width, y: y + height - dy },
-      ];
-    case 'bottom':
-      return [
-        { x: x + dw, y: y + height },
-        { x: x + width - dw, y: y + height },
-      ];
-    case 'left':
-      return [{ x, y: y + dy }, { x, y: y + height - dy }];
-    default:
-      throw new Error('ahhHHHhHHHh');
-  }
-};
 
 class Tile extends Component {
   onClick = () => {
@@ -70,49 +34,31 @@ class Tile extends Component {
 
     DIRECTIONS.forEach(direction => {
       if (walls[direction]) {
-        const points = wallPoints(
-          topLeft.x,
-          topLeft.y,
-          width,
-          height,
-          direction,
-        );
-
         drawnWalls.push(
-          <Path
+          <Wall
             key={`${roomId}-wall-${direction}`}
-            data={[
-              `M ${points[0].x} ${points[0].y}`,
-              `L ${points[1].x} ${points[1].y}`,
-              'Z',
-            ].join(' ')}
-            fillEnabled={false}
-            stroke={'#444444'}
-            strokeWidth={2}
+            {...{
+              x: topLeft.x,
+              y: topLeft.y,
+              width,
+              height,
+              direction,
+            }}
           />,
         );
       }
 
       if (doors[direction]) {
-        const points = doorPoints(
-          topLeft.x,
-          topLeft.y,
-          width,
-          height,
-          direction,
-        );
-
         drawnDoors.push(
-          <Path
+          <Door
             key={`${roomId}-door-${direction}`}
-            data={[
-              `M ${points[0].x} ${points[0].y}`,
-              `L ${points[1].x} ${points[1].y}`,
-              'Z',
-            ].join(' ')}
-            fillEnabled={false}
-            stroke={'#efefef'}
-            strokeWidth={2}
+            {...{
+              x: topLeft.x,
+              y: topLeft.y,
+              width,
+              height,
+              direction,
+            }}
           />,
         );
       }
