@@ -117,8 +117,6 @@ class App extends Component {
             players: this.state.players,
           }}
         />
-
-        <div className={style.menu} />
       </div>
     );
   }
