@@ -67,17 +67,13 @@ class App extends Component {
 
   getPlayers = dungeon => {
     const players = [
-      {
-        id: '1',
-        fill: randomRgb(),
-        face: 'crown',
-      },
-      {
-        id: '2',
-        fill: randomRgb(),
-        face: 'star',
-      },
-    ];
+      { id: '1', face: 'crown' },
+      { id: '2', face: 'star' },
+      { id: '3', face: '★' },
+      { id: '4', face: '☀︎' },
+      { id: '5', face: '⌘︎' },
+      { id: '6', face: '☞' },
+    ].map(player => ({ ...player, fill: randomRgb() }));
 
     players.forEach(player => {
       const tileIds = Object.keys(dungeon.tiles);
