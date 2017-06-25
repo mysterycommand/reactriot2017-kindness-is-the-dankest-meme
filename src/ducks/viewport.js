@@ -3,6 +3,7 @@ import throttle from '../utils/throttle';
 const RESIZE = 'resize';
 const CHANGE_SOCKET_ZOOM = 'change_socket_zoom';
 const CHANGE_CLIENT_ZOOM = 'change_client_zoom';
+const FULL_SYNC = 'viewport_full_sync';
 
 const initialState = {
   width: 480,
@@ -16,6 +17,10 @@ export default function reducer(state = initialState, action) {
   const { type } = action;
 
   switch (type) {
+    case FULL_SYNC: {
+      return action.viewport || state;
+    }
+
     case RESIZE: {
       const { width, height } = action;
       return { ...state, width, height };
@@ -29,6 +34,10 @@ export default function reducer(state = initialState, action) {
     default:
       return { ...state };
   }
+}
+
+export function fullSync(newFullState) {
+  return { type: FULL_SYNC, viewport: newFullState.viewport };
 }
 
 export function resize(width, height) {
@@ -46,6 +55,7 @@ export function changeSocketZoom(increment) {
     const newState = {
       ...state,
       viewport: {
+        ...state.viewport,
         zoomLevel: min(max(zoomLevel + increment, 0.01), 25),
       },
     };

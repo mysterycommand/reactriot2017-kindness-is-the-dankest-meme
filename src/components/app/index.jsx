@@ -6,6 +6,7 @@ import {
   shape,
   bool,
   string,
+  array,
   arrayOf,
   objectOf,
 } from 'prop-types';
@@ -15,9 +16,8 @@ import Viewport from 'components/viewport';
 import style from './style.scss';
 
 import { changeSocketZoom } from '../../ducks/viewport';
-import { addRooms } from '../../ducks/dungeon';
+import { socketAddRooms } from '../../ducks/dungeon';
 
-import randomRgb from '../../utils/random-rgb';
 import distance from '../../utils/distance';
 
 const { max, min } = Math;
@@ -34,6 +34,9 @@ class App extends Component {
     width: number.isRequired,
     height: number.isRequired,
     zoomLevel: number.isRequired,
+
+    // eslint-disable-next-line react/forbid-prop-types
+    players: array.isRequired,
 
     changeZoomLevel: func.isRequired,
     addRooms: func.isRequired,
@@ -53,8 +56,6 @@ class App extends Component {
 
   componentDidMount() {
     window.app = this;
-
-    this.state.players = this.getPlayers(this.props.dungeon);
   }
 
   onScroll = e => {
@@ -107,38 +108,6 @@ class App extends Component {
     });
   };
 
-  getPlayers = dungeon => {
-    const players = [
-      { id: '1', face: 'crown' },
-      { id: '2', face: 'star' },
-      { id: '3', face: '★' },
-      { id: '4', face: '☀︎' },
-      { id: '5', face: '⌘︎' },
-      { id: '6', face: '☞' },
-    ].map(player => ({ ...player, fill: randomRgb() }));
-
-    players.forEach(player => {
-      const tileIds = Object.keys(dungeon.tiles);
-      const tile =
-        dungeon.tiles[tileIds[Math.floor(Math.random() * tileIds.length)]];
-
-      Object.assign(player, {
-        x: tile.x,
-        y: tile.y,
-      });
-    });
-
-    return players;
-  };
-
-  makeNew = () => {
-    const players = this.getPlayers(this.props.dungeon);
-
-    this.setState({
-      players,
-    });
-  };
-
   render() {
     const { width, height, zoomLevel, dungeon } = this.props;
 
@@ -159,7 +128,7 @@ class App extends Component {
             dungeon,
             addRooms: this.props.addRooms,
             onScroll: this.onScroll,
-            players: this.state.players,
+            players: this.props.players,
           }}
         />
       </div>
@@ -169,11 +138,12 @@ class App extends Component {
 const mapStateToProps = state => ({
   ...state.viewport,
   dungeon: state.dungeon,
+  players: state.players,
 });
 
 const mapDispatchToProps = dispatch => ({
   changeZoomLevel: inc => dispatch(changeSocketZoom(inc)),
-  addRooms: tile => dispatch(addRooms(tile)),
+  addRooms: tile => dispatch(socketAddRooms(tile)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Group, Star } from 'react-konva';
-import { number, string } from 'prop-types';
+import { number, oneOf, string, bool } from 'prop-types';
 
 import Coin from './coin';
 import Crown from './faces/crown';
@@ -13,6 +13,7 @@ class Token extends Component {
     radius: number,
     face: string,
     fill: string,
+    highlight: bool,
   };
 
   static defaultProps = {
@@ -21,6 +22,7 @@ class Token extends Component {
     radius: 10,
     face: 'crown',
     fill: 'rgba(255,255,255,1)',
+    highlight: false,
   };
 
   getFace() {
@@ -68,11 +70,27 @@ class Token extends Component {
     }
   }
 
+  getHighlight() {
+    if (this.props.highlight) {
+      return (
+        <Coin
+          x={this.props.x}
+          y={this.props.y}
+          radius={this.props.radius + 3}
+          fill={'rgba(0,0,0,0.5)'}
+        />
+      );
+    }
+
+    return null;
+  }
+
   render() {
     const { x, y, radius, fill } = this.props;
 
     return (
       <Group>
+        {this.getHighlight()}
         <Coin
           {...{
             x,

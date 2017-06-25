@@ -23,12 +23,55 @@ if (NODE_ENV === 'development') {
 app.use(express.static(path.join(__dirname, '../build')));
 
 const wss = getWss('/dungeon');
+
+const uuid = () => String(Math.random());
+
+let lastKnownState = null;
+
+const assignCurrentPlayer = (client, players) => {
+  players.forEach(player => (player.isYou = player.id === client.id));
+};
+
 app.ws('/dungeon', (ws, req) => {
   ws.on('message', message => {
-    const { size: s } = wss.clients;
+    if (message === 'join') {
+      const newPlayerId = uuid();
+      ws.id = newPlayerId;
+
+      const newPlayer = {
+        id: newPlayerId,
+        fill: '#cecece',
+        face: 'star',
+        x: Math.floor(Math.random() * 10) - 5,
+        y: Math.floor(Math.random() * 10) - 5,
+      };
+
+      const players = lastKnownState ? lastKnownState.players || [] : [];
+      players.push(newPlayer);
+
+      const message = {
+        duck: 'fullSync',
+        action: 'fullSync',
+        payload: Object.assign(lastKnownState || {}, {
+          players,
+        }),
+      };
+
+      wss.clients.forEach(client => {
+        assignCurrentPlayer(client, message.payload.players);
+        client.send(JSON.stringify(message));
+      });
+      return;
+    }
+
+    const json = JSON.parse(message);
+
     wss.clients.forEach(client => {
-      client.send(message);
+      assignCurrentPlayer(client, json.payload.players);
+      client.send(JSON.stringify(json));
     });
+
+    lastKnownState = json.payload;
   });
 });
 

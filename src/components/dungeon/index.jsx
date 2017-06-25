@@ -55,6 +55,7 @@ const Dungeon = ({ dungeon, width, height, zoomLevel, players, addRooms }) => {
       radius={tileSize / 3}
       face={player.face}
       fill={player.fill}
+      highlight={player.isYou}
     />,
   );
 
