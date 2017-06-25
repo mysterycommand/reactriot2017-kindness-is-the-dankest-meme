@@ -15,12 +15,12 @@ import Viewport from 'components/viewport';
 
 import style from './style.scss';
 
-import { changeSocketZoom } from '../../ducks/viewport';
 import { socketAddRooms } from '../../ducks/dungeon';
 import { socketTryToMove } from '../../ducks/players';
 
 import distance from '../../utils/distance';
 import { DIRECTIONS, getTileId, tileInDirection } from '../../utils/dungeon';
+import throttle from '../../utils/throttle';
 
 const { max, min } = Math;
 
@@ -33,14 +33,9 @@ const tileShape = shape({
 
 class App extends Component {
   static propTypes = {
-    width: number.isRequired,
-    height: number.isRequired,
-    zoomLevel: number.isRequired,
-
     // eslint-disable-next-line react/forbid-prop-types
     players: array.isRequired,
 
-    changeZoomLevel: func.isRequired,
     addRooms: func.isRequired,
     tryToMove: func.isRequired,
 
@@ -55,20 +50,35 @@ class App extends Component {
     }).isRequired,
   };
 
-  state = { players: [], touchDistance: -1 };
+  state = {
+    width: 480,
+    height: 270,
+    zoomLevel: 1,
+    touchDistance: -1,
+  };
 
   componentDidMount() {
     window.app = this;
+    window.addEventListener('resize', this.onResize);
+    this.onResize({ target: window });
   }
+
+  onResize = ({ target }) => {
+    const { innerWidth: width, innerHeight: height } = target;
+    this.setState({ width, height });
+  };
 
   onScroll = e => {
     e.stopPropagation();
     e.preventDefault();
 
     const deltaMax = 2;
-    this.props.changeZoomLevel(
-      Math.max(Math.min(e.deltaY / 150, deltaMax), -1 * deltaMax),
+    const increment = Math.max(
+      Math.min(e.deltaY / 150, deltaMax),
+      -1 * deltaMax,
     );
+
+    throttle('change_zoom', () => this.changeZoomLevel(increment));
   };
 
   onTouchStart = event => {
@@ -104,7 +114,7 @@ class App extends Component {
 
     const deltaMax = 2;
     const delta = this.state.touchDistance - touchDistance;
-    this.props.changeZoomLevel(max(min(-delta / 10, deltaMax), -deltaMax));
+    this.changeZoomLevel(max(min(-delta / 10, deltaMax), -deltaMax));
 
     this.setState({
       touchDistance,
@@ -142,8 +152,15 @@ class App extends Component {
     this.props.addRooms(tile);
   };
 
+  changeZoomLevel = increment => {
+    const zoomLevel = min(max(this.state.zoomLevel + increment, 0.01), 25);
+
+    this.setState({ zoomLevel });
+  };
+
   render() {
-    const { width, height, zoomLevel, dungeon } = this.props;
+    const { dungeon } = this.props;
+    const { width, height, zoomLevel } = this.state;
 
     return (
       <div
@@ -170,13 +187,11 @@ class App extends Component {
   }
 }
 const mapStateToProps = state => ({
-  ...state.viewport,
   dungeon: state.dungeon,
   players: state.players,
 });
 
 const mapDispatchToProps = dispatch => ({
-  changeZoomLevel: inc => dispatch(changeSocketZoom(inc)),
   addRooms: tile => dispatch(socketAddRooms(tile)),
   tryToMove: tile => dispatch(socketTryToMove(tile)),
 });

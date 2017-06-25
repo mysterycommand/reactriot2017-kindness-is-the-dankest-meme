@@ -12,6 +12,15 @@
   <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.png">
 
   <title>Kindness is the Dankest Meme</title>
+
+  <style>
+  .voting-widget {
+    position: fixed;
+    bottom: 4px;
+    right: 4px;
+    z-index: 3000;
+  }
+  </style>
 </head>
 
 <body>
@@ -19,6 +28,9 @@
     You need to enable stupid JavaScript to run this app.
   </noscript>
   <main id="root" role="main"></main>
+
+  <div id="hackbit-vote-widget" class="voting-widget"></div>
+  <script src="https://www.reactriot.com/entries/190-kindness-is-the-dankest-meme/vote.js" type="text/javascript"></script>
 </body>
 
 </html>

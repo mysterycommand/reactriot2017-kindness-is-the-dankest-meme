@@ -4,6 +4,7 @@ const express = require('express');
 const expressWs = require('express-ws');
 
 const getRandomFace = require('./get-random-face');
+const randomRgb = require('./random-rgb');
 
 const { NODE_ENV, PORT } = process.env;
 
@@ -70,7 +71,7 @@ app.ws('/dungeon', (ws, req) => {
 
         joinedPlayer = {
           id: playerId,
-          fill: '#cecece',
+          fill: randomRgb(),
           face: getRandomFace(),
           x: tile.x,
           y: tile.y,
