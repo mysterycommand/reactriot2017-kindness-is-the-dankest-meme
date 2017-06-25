@@ -28,6 +28,16 @@ const uuid = () => String(Math.random());
 
 let lastKnownState = null;
 
+const getTileInCenterRoom = () => {
+  if (!lastKnownState || !lastKnownState.dungeon) {
+    return { x: 0, y: 0 };
+  }
+
+  const room = lastKnownState.dungeon.rooms[0];
+  const tileId = room.tileIds[Math.floor(Math.random() * room.tileIds.length)];
+  return lastKnownState.dungeon.tiles[tileId];
+};
+
 const assignCurrentPlayer = (client, players) => {
   players.forEach(player => (player.isYou = player.id === client.id));
 };
@@ -54,12 +64,14 @@ app.ws('/dungeon', (ws, req) => {
       }
 
       if (!joinedPlayer) {
+        const tile = getTileInCenterRoom();
+
         joinedPlayer = {
           id: playerId,
           fill: '#cecece',
           face: 'star',
-          x: Math.floor(Math.random() * 10) - 5,
-          y: Math.floor(Math.random() * 10) - 5,
+          x: tile.x,
+          y: tile.y,
         };
 
         players.push(joinedPlayer);
