@@ -6,6 +6,7 @@ import {
   shape,
   bool,
   string,
+  array,
   arrayOf,
   objectOf,
 } from 'prop-types';
@@ -34,6 +35,9 @@ class App extends Component {
     height: number.isRequired,
     zoomLevel: number.isRequired,
 
+    // eslint-disable-next-line react/forbid-prop-types
+    players: array.isRequired,
+
     changeZoomLevel: func.isRequired,
     addRooms: func.isRequired,
 
@@ -52,8 +56,6 @@ class App extends Component {
 
   componentDidMount() {
     window.app = this;
-
-    this.state.players = this.getPlayers(this.props.dungeon);
   }
 
   onScroll = e => {
@@ -106,40 +108,6 @@ class App extends Component {
     });
   };
 
-  getPlayers = () => {
-    // const players = [
-    //   {
-    //     id: '1',
-    //     fill: randomRgb(),
-    //     face: 'crown',
-    //   },
-    //   {
-    //     id: '2',
-    //     fill: randomRgb(),
-    //     face: 'star',
-    //   },
-    // ];
-    // players.forEach(player => {
-    //   const tileIds = Object.keys(dungeon.tiles);
-    //   const tile =
-    //     dungeon.tiles[tileIds[Math.floor(Math.random() * tileIds.length)]];
-    //   Object.assign(player, {
-    //     x: tile.x,
-    //     y: tile.y,
-    //   });
-    // });
-    const players = [];
-    return players;
-  };
-
-  makeNew = () => {
-    const players = this.getPlayers(this.props.dungeon);
-
-    this.setState({
-      players,
-    });
-  };
-
   render() {
     const { width, height, zoomLevel, dungeon } = this.props;
 
@@ -160,7 +128,7 @@ class App extends Component {
             dungeon,
             addRooms: this.props.addRooms,
             onScroll: this.onScroll,
-            players: this.state.players,
+            players: this.props.players,
           }}
         />
       </div>
@@ -170,6 +138,7 @@ class App extends Component {
 const mapStateToProps = state => ({
   ...state.viewport,
   dungeon: state.dungeon,
+  players: state.players,
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -15,7 +15,7 @@ export default function reducer(state = initialState, action) {
 
   switch (type) {
     case FULL_SYNC: {
-      return action.dungeon;
+      return action.dungeon || state;
     }
 
     default:
