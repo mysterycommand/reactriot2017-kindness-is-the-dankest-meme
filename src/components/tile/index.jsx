@@ -62,7 +62,7 @@ class Tile extends Component {
     });
 
     return (
-      <Group onClick={this.onClick}>
+      <Group onClick={this.onClick} onTouchEnd={this.onClick}>
         <Rect
           x={topLeft.x}
           y={topLeft.y}
