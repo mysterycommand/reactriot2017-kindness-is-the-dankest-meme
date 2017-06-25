@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Group, Star } from 'react-konva';
-import { number, oneOf, string, bool } from 'prop-types';
+import { number, string, bool } from 'prop-types';
 
 import Coin from './coin';
 import Crown from './faces/crown';
