@@ -1,5 +1,3 @@
-import { DIRECTIONS, getTileId, tileInDirection } from '../utils/dungeon';
-
 const FULL_SYNC = 'players_full_sync';
 
 const initialState = [];
@@ -31,17 +29,6 @@ export function socketTryToMove(toTile) {
     }
 
     const you = yous[0];
-    const tryingMove = getTileId(toTile);
-
-    const validMove =
-      DIRECTIONS.filter(dir => {
-        const id = getTileId(tileInDirection(you.x, you.y, dir));
-        return id === tryingMove;
-      }).length > 0;
-
-    if (!validMove) {
-      return;
-    }
 
     you.x = toTile.x;
     you.y = toTile.y;

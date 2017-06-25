@@ -20,6 +20,7 @@ import { socketAddRooms } from '../../ducks/dungeon';
 import { socketTryToMove } from '../../ducks/players';
 
 import distance from '../../utils/distance';
+import { DIRECTIONS, getTileId, tileInDirection } from '../../utils/dungeon';
 
 const { max, min } = Math;
 
@@ -111,8 +112,34 @@ class App extends Component {
   };
 
   onTileClick = tile => {
-    this.props.addRooms(tile);
+    const yous = this.props.players.filter(p => p.isYou);
+    if (yous.length === 0) {
+      return;
+    }
+
+    const you = yous[0];
+    const currentTileId = getTileId({ x: you.x, y: you.y });
+    const currentTile = this.props.dungeon.tiles[currentTileId];
+    const tryingMove = getTileId(tile);
+
+    const validMove =
+      DIRECTIONS.filter(dir => {
+        if (currentTile.walls[dir] && !currentTile.doors[dir]) {
+          return false;
+        }
+
+        const id = getTileId(tileInDirection(you.x, you.y, dir));
+        const dirTile = this.props.dungeon.tiles[id];
+
+        return dirTile && id === tryingMove;
+      }).length > 0;
+
+    if (!validMove) {
+      return;
+    }
+
     this.props.tryToMove(tile);
+    this.props.addRooms(tile);
   };
 
   render() {
