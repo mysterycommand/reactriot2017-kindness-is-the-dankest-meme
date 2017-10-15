@@ -7,6 +7,7 @@ export default function reducer(state = initialState, action) {
 
   switch (type) {
     case FULL_SYNC: {
+      // console.log(action.players || state);
       return action.players || state;
     }
 

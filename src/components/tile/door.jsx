@@ -26,7 +26,7 @@ export function getPoints({ x, y, width, height, direction }) {
   }
 }
 
-const Door = ({ x, y, width, height, direction }) => {
+const Door = ({ x, y, width, height, direction, zoomLevel }) => {
   const points = getPoints({ x, y, width, height, direction });
 
   return (
@@ -38,7 +38,7 @@ const Door = ({ x, y, width, height, direction }) => {
       ].join(' ')}
       fillEnabled={false}
       stroke={'#efefef'}
-      strokeWidth={2}
+      strokeWidth={2 * zoomLevel}
     />
   );
 };
@@ -48,6 +48,7 @@ Door.propTypes = {
   y: number.isRequired,
   width: number.isRequired,
   height: number.isRequired,
+  zoomLevel: number.isRequired,
   direction: oneOf(['top', 'right', 'bottom', 'left']).isRequired,
 };
 
